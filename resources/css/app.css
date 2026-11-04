@@ -1,0 +1,92 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../views';
+
+@theme {
+    --font-sans: 'Schibsted Grotesk', ui-sans-serif, system-ui, sans-serif;
+    --color-ink: #1a2420;
+    --color-muted: #5b6863;
+    --color-mist: #eef2f0;
+    --color-line: #d8e0dc;
+    --color-pine: #1f6f5c;
+    --color-pine-dark: #155244;
+    --color-pine-soft: #e2efe9;
+    --color-saffron: #d9971a;
+    --color-saffron-soft: #fbf0d6;
+    --color-brick: #b03a2e;
+    --color-brick-soft: #f8e4e1;
+}
+
+@layer base {
+    body { @apply bg-mist text-ink antialiased; font-feature-settings: "ss01"; }
+    h1, h2, h3 { letter-spacing: -0.015em; }
+    :focus-visible { outline: 2px solid var(--color-pine); outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+}
+
+@utility btn { @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed; }
+@utility badge { @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold; }
+
+@layer components {
+    .btn-primary { @apply btn bg-pine text-white hover:bg-pine-dark; }
+    .btn-accent { @apply btn bg-saffron text-ink hover:brightness-95; }
+    .btn-ghost { @apply btn border border-line bg-white text-ink hover:bg-mist; }
+    .btn-danger { @apply btn text-brick hover:bg-brick-soft; }
+    .btn-sm { @apply px-3 py-1.5 text-xs; }
+    .input { @apply block w-full rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink placeholder:text-muted/70 focus:border-pine focus:outline-none focus:ring-2 focus:ring-pine/20; }
+    .label { @apply mb-1.5 block text-sm font-semibold; }
+    .hint { @apply mt-1 text-xs text-muted; }
+    .panel { @apply rounded-xl border border-line bg-white; }
+    .badge-green { @apply badge bg-pine-soft text-pine-dark; }
+    .badge-gold { @apply badge bg-saffron-soft text-[#7a5408]; }
+    .badge-grey { @apply badge bg-mist text-muted; }
+    .badge-red { @apply badge bg-brick-soft text-brick; }
+    .table { @apply w-full text-left text-sm; }
+    .table th { @apply border-b border-line px-4 py-2.5 text-xs font-semibold text-muted; }
+    .table td { @apply border-b border-line/70 px-4 py-3 align-middle; }
+    .table tr:last-child td { @apply border-b-0; }
+    .check { @apply size-4 rounded border-line text-pine accent-[#1f6f5c]; }
+    .prose-lesson { @apply max-w-none leading-relaxed text-[17px]; }
+    .prose-lesson h1 { @apply mt-8 mb-3 text-2xl font-bold; }
+    .prose-lesson h2 { @apply mt-8 mb-3 text-xl font-bold; }
+    .prose-lesson h3 { @apply mt-6 mb-2 text-lg font-semibold; }
+    .prose-lesson p { @apply my-4; }
+    .prose-lesson ul { @apply my-4 list-disc pl-6; }
+    .prose-lesson ol { @apply my-4 list-decimal pl-6; }
+    .prose-lesson li { @apply my-1; }
+    .prose-lesson a { @apply text-pine underline underline-offset-2; }
+    .prose-lesson blockquote { @apply my-5 border-l-4 border-saffron bg-saffron-soft/50 px-4 py-2; }
+    .prose-lesson code { @apply rounded bg-mist px-1.5 py-0.5 text-[0.9em]; }
+    .prose-lesson pre { @apply my-5 overflow-x-auto rounded-lg bg-ink p-4 text-sm text-white; }
+    .prose-lesson pre code { @apply bg-transparent p-0; }
+    .prose-lesson img { @apply my-5 rounded-lg; }
+    .prose-lesson table { @apply my-5 w-full text-sm; }
+    .prose-lesson th, .prose-lesson td { @apply border border-line px-3 py-2; }
+}
+
+/* The curriculum path: a vertical spine with a node per lesson. */
+.path { position: relative; }
+.path-item { position: relative; padding-left: 2.25rem; }
+.path-item::before {
+    content: ""; position: absolute; left: 0.6875rem; top: 0; bottom: 0; width: 2px; background: var(--color-line);
+}
+.path-item:first-child::before { top: 1.1rem; }
+.path-item:last-child::before { bottom: calc(100% - 1.1rem); }
+.path-item.is-done::before { background: var(--color-saffron); }
+.path-node {
+    position: absolute; left: 0.3125rem; top: 0.8rem; width: 0.875rem; height: 0.875rem; border-radius: 9999px;
+    border: 2px solid var(--color-line); background: #fff; display: grid; place-items: center;
+}
+.is-done > .path-node { border-color: var(--color-saffron); background: var(--color-saffron); }
+.is-current > .path-node { border-color: var(--color-pine); box-shadow: 0 0 0 4px var(--color-pine-soft); }
+.is-locked > .path-node { border-style: dashed; }
+.path-node.is-exam { border-radius: 3px; transform: rotate(45deg); }
+
+.drag-handle { cursor: grab; }
+.sortable-ghost { opacity: .4; }
+.sortable-chosen { box-shadow: 0 6px 20px -8px rgb(26 36 32 / .35); }
+
+@keyframes rise { from { transform: translateY(8px); opacity: 0 } to { transform: none; opacity: 1 } }
+.celebrate { animation: rise .5s ease-out both; }
