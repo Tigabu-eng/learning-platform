@@ -26,7 +26,7 @@
     <div class="relative flex h-full flex-col items-center justify-center px-[9%] text-center">
         <div class="flex items-center gap-2 text-[clamp(10px,1.4vw,14px)] font-bold text-pine">
             @include('partials.mark', ['class' => 'size-[1.8em]'])
-            {{ config('app.name') }}
+            {{ config('app.name') }} ({{ config('school.brand.short_name') }})™
         </div>
         <div class="mt-[3%] text-[clamp(12px,1.9vw,20px)] font-semibold text-muted">Certificate of completion</div>
         <div class="mt-[2.5%] text-[clamp(26px,5.4vw,58px)] font-extrabold leading-none tracking-tight">{{ $certificate->user->name }}</div>

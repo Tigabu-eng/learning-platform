@@ -2,8 +2,9 @@
 @section('content')
 <section class="mb-12 grid items-end gap-8 md:grid-cols-[1fr_auto]">
     <div>
-        <h1 class="max-w-2xl text-4xl font-extrabold leading-[1.05] sm:text-5xl">Training for travel advisors, from first booking to certified pro.</h1>
-        <p class="mt-4 max-w-xl text-lg text-muted">Each course is a path of short lessons and quizzes. Pass the final exam to earn a certificate your clients and suppliers can verify.</p>
+        <p class="text-sm font-semibold text-pine">TARC learning</p>
+        <h1 class="mt-2 max-w-2xl text-4xl font-extrabold leading-[1.05] sm:text-5xl">Your travel business deserves structure, growth and support.</h1>
+        <p class="mt-4 max-w-xl text-lg text-muted">Self-paced courses for travel professionals at every stage, from setting up your agency to earning your Recognized Travel Advisor certification. Pass the final exam to get a certificate that clients, suppliers and host agencies can verify.</p>
     </div>
     <form action="{{ route('home') }}" class="w-full md:w-80">
         <label class="sr-only" for="q">Search courses</label>

@@ -3,6 +3,14 @@
 return [
     'currency' => env('SCHOOL_CURRENCY', 'USD'),
 
+    // Travel Advisor Resource Center (TARC) links shown in the header, footer and emails.
+    'brand' => [
+        'short_name' => 'TARC',
+        'site_url' => env('TARC_SITE_URL', 'https://traveladvisorresourcecenter.com'),
+        'community_url' => env('TARC_COMMUNITY_URL', 'https://traveladvisorresourcecenter.com'),
+        'support_email' => env('TARC_SUPPORT_EMAIL', 'admin@thetarc.com'),
+    ],
+
     // Which payment gateway handles paid checkouts: test | chapa | stripe
     'gateway' => env('PAYMENT_GATEWAY', 'test'),
 

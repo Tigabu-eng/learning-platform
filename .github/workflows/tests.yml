@@ -1,10 +1,16 @@
-name: Tests
+name: CI/CD
+
+# Every push and pull request: tests on PHP 8.3 and 8.4 (SQLite), the full suite and
+# migrations on MySQL (the production database), and a front-end build.
+# Pushes to main: if all of that passes, deploy to the production host over SSH.
+# See DEPLOY.md for the one-time server setup and the secrets this needs.
 
 on:
   push:
     branches:
       - main
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -18,7 +24,7 @@ jobs:
       matrix:
         php: [8.3, 8.4]
 
-    name: PHP ${{ matrix.php }}
+    name: Tests (PHP ${{ matrix.php }})
 
     steps:
       - name: Checkout code
@@ -44,3 +50,157 @@ jobs:
 
       - name: Execute tests
         run: php artisan test
+
+  mysql:
+    runs-on: ubuntu-latest
+    name: Tests and migrations (MySQL)
+
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: tarc_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -ppassword"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+
+    env:
+      DB_CONNECTION: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: tarc_test
+      DB_USERNAME: root
+      DB_PASSWORD: password
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
+        with:
+          php-version: 8.3
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, pdo_mysql
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Prepare environment
+        run: cp .env.example .env && php artisan key:generate
+
+      # phpunit.xml sets SQLite, but its <env> values don't override variables that are
+      # already set, so the DB_* variables above run the whole suite on MySQL.
+      - name: Execute tests on MySQL
+        run: php artisan test
+
+      - name: Run migrations and seed demo data on MySQL
+        run: php artisan migrate:fresh --seed --force
+
+  assets:
+    runs-on: ubuntu-latest
+    name: Front-end build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install and build
+        run: npm ci && npm run build
+
+  deploy:
+    # Runs only for pushes to main, after every check passes, and only once the
+    # DEPLOY_PATH variable is set (so the pipeline is safe before the server is ready).
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.DEPLOY_PATH != ''
+    needs: [tests, mysql, assets]
+    runs-on: ubuntu-latest
+    name: Deploy to production
+
+    environment:
+      name: production
+      url: ${{ vars.APP_URL }}
+
+    concurrency:
+      group: production-deploy
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
+        with:
+          php-version: ${{ vars.DEPLOY_PHP_VERSION || '8.3' }}
+          extensions: dom, curl, libxml, mbstring, zip, pdo, pdo_mysql
+          coverage: none
+
+      - name: Install production Composer dependencies
+        run: composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction --no-progress
+
+      - name: Setup Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Build front-end assets
+        run: npm ci && npm run build
+
+      - name: Package release
+        run: |
+          tar -czf "$RUNNER_TEMP/release.tgz" \
+            --exclude=./.git --exclude=./.github --exclude=./node_modules --exclude=./tests \
+            --exclude=./storage --exclude=./.env --exclude='./database/*.sqlite' \
+            --exclude=./public/storage --exclude=./public/hot .
+
+      - name: Configure SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      - name: Upload and activate release
+        env:
+          HOST: ${{ secrets.DEPLOY_HOST }}
+          USER: ${{ secrets.DEPLOY_USER }}
+          PORT: ${{ vars.DEPLOY_PORT || '22' }}
+          APP_DIR: ${{ vars.DEPLOY_PATH }}
+          PHP_BIN: ${{ vars.DEPLOY_PHP || 'php' }}
+        run: |
+          SSH="ssh -i $HOME/.ssh/deploy_key -p $PORT -o StrictHostKeyChecking=yes"
+          RELEASE="$(date -u +%Y%m%d%H%M%S)-${GITHUB_SHA::7}"
+          $SSH "$USER@$HOST" "mkdir -p '$APP_DIR/uploads'"
+          scp -i ~/.ssh/deploy_key -P "$PORT" -o StrictHostKeyChecking=yes \
+            "$RUNNER_TEMP/release.tgz" deploy/remote-deploy.sh "$USER@$HOST:$APP_DIR/uploads/"
+          $SSH "$USER@$HOST" "bash '$APP_DIR/uploads/remote-deploy.sh' '$APP_DIR' '$RELEASE' '$PHP_BIN'"
+
+      - name: Check the live site
+        if: vars.APP_URL != ''
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+        run: |
+          for i in 1 2 3 4 5; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "$APP_URL/up") && [ "$code" = "200" ] && { echo "Live: $APP_URL/up returned 200"; exit 0; }
+            echo "Attempt $i: $APP_URL/up returned $code"; sleep 5
+          done
+          exit 1

@@ -13,7 +13,7 @@
         <p class="mt-5 text-sm text-muted">Taught by <span class="font-semibold text-ink">{{ $course->instructor->name }}</span> · {{ $course->level }} · {{ $lessonCount }} lessons{{ $minutes ? ' · about '.($minutes >= 60 ? round($minutes / 60, 1).' hours' : $minutes.' minutes') : '' }}</p>
 
         @if ($course->description)
-            <div class="prose-lesson mt-8">{!! \Illuminate\Support\Str::markdown($course->description, ['html_input' => 'escape']) !!}</div>
+            <div class="prose-lesson mt-8">{!! \Illuminate\Support\Str::markdown($course->description, ['html_input' => 'escape', 'allow_unsafe_links' => false]) !!}</div>
         @endif
 
         <h2 class="mt-12 text-2xl font-bold">What you’ll go through</h2>
