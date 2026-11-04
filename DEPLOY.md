@@ -2,6 +2,21 @@
 
 The platform deploys automatically from GitHub to TARC's existing host. This guide covers the one-time setup.
 
+## Current production setup
+
+This is already done. The rest of this guide explains how, in case it needs redoing.
+
+| Item | Value |
+|---|---|
+| Host | Namecheap shared hosting (cPanel, CloudLinux, LiteSpeed), server `162.0.229.4` |
+| SSH | User `tarcaatk`, port `21098`, key `tarc_deploy_key` authorized in cPanel |
+| App folder (`DEPLOY_PATH`) | `/home/tarcaatk/learn.tarctpc.com` |
+| Document root | `learn.tarctpc.com/current/public` |
+| PHP | 8.3, set account-wide in cPanel → *Select PHP Version*. On this host, extensions only load for the account-wide version, and the WordPress site on `tpd.tarctpc.com` shares it |
+| Database | MariaDB 11.4, database and user `tarcaatk_learn` (the password is only in `shared/.env`) |
+| Settings | `/home/tarcaatk/learn.tarctpc.com/shared/.env`. Mail is logged and payments are in test mode until a mailbox and Stripe are set up |
+| GitHub | `production` environment on github.com/Tigabu-eng/learning-platform |
+
 ## How it works
 
 Every push and pull request runs the **CI/CD** workflow (`.github/workflows/tests.yml`):
@@ -65,7 +80,7 @@ ssh-keygen -t ed25519 -C "github-deploy-tarc" -f tarc_deploy_key -N ""
 
 ## 4. Add the GitHub secrets and variables
 
-Go to github.com/TARC-LLC/learning-platform → *Settings* → *Environments* → **New environment** called `production`. Tick *Required reviewers* if you want to approve each deploy. Then add these:
+Go to github.com/Tigabu-eng/learning-platform → *Settings* → *Environments* → **New environment** called `production`. Tick *Required reviewers* if you want to approve each deploy. Then add these:
 
 **Environment secrets**
 
