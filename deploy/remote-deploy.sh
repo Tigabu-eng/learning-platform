@@ -52,6 +52,16 @@ cd "$NEW"
 "$PHP_BIN" artisan migrate --force --no-interaction
 "$PHP_BIN" artisan optimize --no-interaction
 
+# cPanel creates the document root (current/public) as a real folder when it is set.
+# Replace it with the symlink, but only if it holds no files.
+if [ -e "$APP_DIR/current" ] && [ ! -L "$APP_DIR/current" ]; then
+    if [ -n "$(find "$APP_DIR/current" -type f -print -quit)" ]; then
+        echo "$APP_DIR/current is a real folder with files in it. Move it aside, then deploy again." >&2
+        exit 1
+    fi
+    rm -rf "$APP_DIR/current"
+fi
+
 echo "Switching current -> $RELEASE"
 ln -sfn "$NEW" "$APP_DIR/current.new"
 mv -Tf "$APP_DIR/current.new" "$APP_DIR/current"
