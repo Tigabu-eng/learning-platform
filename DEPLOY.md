@@ -38,7 +38,7 @@ The deploy job builds the app on GitHub (Composer packages and front-end assets)
 
 The five most recent releases are kept, so a rollback takes one command. Afterwards, the job checks that `https://learn.tarctpc.com/up` responds.
 
-The deploy job stays switched off until the `DEPLOY_PATH` variable is set (step 4), so the tests can run safely before the server is ready.
+If the production settings from step 4 are missing, the deploy job stops at its first step and lists what is missing.
 
 ## 1. Check the host
 
@@ -95,7 +95,7 @@ Go to github.com/Tigabu-eng/learning-platform → *Settings* → *Environments* 
 
 | Name | Example | Notes |
 |---|---|---|
-| `DEPLOY_PATH` | `/home/USER/learn.tarctpc.com` | Setting this turns deploys on |
+| `DEPLOY_PATH` | `/home/USER/learn.tarctpc.com` | The app folder on the server |
 | `APP_URL` | `https://learn.tarctpc.com` | Used for the post-deploy check |
 | `DEPLOY_PHP` | `/opt/cpanel/ea-php83/root/usr/bin/php` | Only if plain `php` on SSH is older than 8.3 |
 | `DEPLOY_PORT` | `22` | Many shared hosts use a different SSH port, such as `21098` or `2222` |
@@ -133,7 +133,7 @@ A rollback doesn't undo database migrations. If a release changed the database, 
 
 | Symptom | Fix |
 |---|---|
-| Deploy job skipped | `DEPLOY_PATH` isn't set on the `production` environment |
+| Deploy fails at "Check deploy settings" | Add the variables and secrets it lists to the `production` environment |
 | `Host key verification failed` | `DEPLOY_KNOWN_HOSTS` is missing, or it's for the wrong host or port |
 | `Permission denied (publickey)` | The public key isn't authorized in cPanel, or `DEPLOY_USER` is wrong |
 | `needs 8.3 or newer` | Set `DEPLOY_PHP` to the host's PHP 8.3+ binary |
