@@ -160,6 +160,15 @@ class RulesAndAccessTest extends TestCase
         $this->post(route('studio.lessons.store', $ch), ['title' => 'Exam 2', 'type' => 'exam'])->assertSessionHasErrors('type');
     }
 
+    public function test_course_description_markdown_is_escaped_and_blocks_unsafe_links(): void
+    {
+        $c = $this->course(['description' => "<script>alert(1)</script>\n\n[Book now](javascript:alert(2))"]);
+        $this->get(route('courses.show', $c))
+            ->assertOk()
+            ->assertDontSee('<script>alert(1)</script>', false)
+            ->assertDontSee('javascript:alert(2)', false);
+    }
+
     public function test_seeded_demo_school_works(): void
     {
         $this->seed();

@@ -30,7 +30,7 @@
     </div>
     <form method="POST" action="{{ route('studio.coupons.store') }}" class="panel space-y-4 self-start p-5">@csrf
         <h2 class="font-bold">New coupon</h2>
-        <div><label class="label" for="code">Code</label><input id="code" name="code" class="input uppercase" value="{{ old('code') }}" required placeholder="WELCOME20"></div>
+        <div><label class="label" for="code">Code</label><input id="code" name="code" class="input uppercase" value="{{ old('code') }}" required placeholder="TRAVELPRO20"></div>
         <div class="grid grid-cols-2 gap-3">
             <div><label class="label" for="type">Type</label><select id="type" name="type" class="input"><option value="percent">Percent</option><option value="fixed" @selected(old('type') === 'fixed')>Fixed amount</option></select></div>
             <div><label class="label" for="value">Value</label><input id="value" name="value" type="number" step="0.01" min="0.01" class="input" value="{{ old('value') }}" required></div>

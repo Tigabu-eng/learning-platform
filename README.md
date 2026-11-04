@@ -22,9 +22,10 @@ Open http://localhost:8000. Every demo account uses the password `password`:
 | Email | Role | What you'll see |
 |---|---|---|
 | admin@tarc.test | Admin | Whole-school stats, users and roles, all courses and orders |
-| maya@tarc.test | Instructor | Studio: 3 courses, students, quiz results, coupons, sales |
-| aisha@tarc.test | Student | Finished *Becoming a Travel Advisor*, passed the exam, has a certificate |
-| daniel@tarc.test | Student | Halfway through *Becoming a Travel Advisor*, final exam still locked |
+| steven@tarc.test | Instructor | Steven Gould's Studio: the RTA Certification Program with its students, quiz results, the RTA50 coupon and sales |
+| maya@tarc.test | Instructor | Fictional instructor's Studio: TA Launchpad Essentials, TA Launchpad Pro (draft), the free Client Discovery Calls course and the TRAVELPRO20 coupon |
+| aisha@tarc.test | Student | Finished the *RTA Certification Program*, passed the exam, has a certificate |
+| daniel@tarc.test | Student | Halfway through the *RTA Certification Program*, final exam still locked |
 | liam@tarc.test | Student | Enrolled in the free *Client Discovery Calls* course |
 
 Change or remove these accounts before going live (see "Going live" below).

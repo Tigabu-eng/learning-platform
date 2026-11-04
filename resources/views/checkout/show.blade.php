@@ -18,7 +18,7 @@
             <form method="GET" action="{{ route('checkout.show', $course) }}" class="mt-6">
                 <label class="label" for="coupon">Coupon code</label>
                 <div class="flex gap-2">
-                    <input id="coupon" name="coupon" value="{{ request('coupon') }}" class="input uppercase" placeholder="e.g. WELCOME20">
+                    <input id="coupon" name="coupon" value="{{ request('coupon') }}" class="input uppercase" placeholder="e.g. TRAVELPRO20">
                     <button class="btn-ghost">Apply</button>
                 </div>
                 @if ($couponError)<p class="mt-1.5 text-sm text-brick">{{ $couponError }}</p>@endif
