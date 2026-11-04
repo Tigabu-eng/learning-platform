@@ -122,9 +122,10 @@ jobs:
         run: npm ci && npm run build
 
   deploy:
-    # Runs only for pushes to main, after every check passes, and only once the
-    # DEPLOY_PATH variable is set (so the pipeline is safe before the server is ready).
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.DEPLOY_PATH != ''
+    # Runs only for pushes to main (and manual runs on main), after every check passes.
+    # The production environment's variables aren't visible in a job-level `if`, so the
+    # "is the server configured?" check is the first step below instead.
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: [tests, mysql, assets]
     runs-on: ubuntu-latest
     name: Deploy to production
@@ -138,6 +139,26 @@ jobs:
       cancel-in-progress: false
 
     steps:
+      - name: Check deploy settings
+        env:
+          DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+          HAS_HOST: ${{ secrets.DEPLOY_HOST != '' }}
+          HAS_USER: ${{ secrets.DEPLOY_USER != '' }}
+          HAS_KEY: ${{ secrets.DEPLOY_SSH_KEY != '' }}
+          HAS_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS != '' }}
+        run: |
+          missing=""
+          [ -n "$DEPLOY_PATH" ] || missing="$missing DEPLOY_PATH(variable)"
+          [ "$HAS_HOST" = "true" ] || missing="$missing DEPLOY_HOST"
+          [ "$HAS_USER" = "true" ] || missing="$missing DEPLOY_USER"
+          [ "$HAS_KEY" = "true" ] || missing="$missing DEPLOY_SSH_KEY"
+          [ "$HAS_KNOWN_HOSTS" = "true" ] || missing="$missing DEPLOY_KNOWN_HOSTS"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing on the production environment:$missing (see DEPLOY.md, step 4)"
+            exit 1
+          fi
+          echo "Deploy settings found."
+
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
