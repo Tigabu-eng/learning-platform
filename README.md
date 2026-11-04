@@ -83,6 +83,8 @@ Run the tests with `php artisan test`.
 
 ## Going live
 
+Production runs at **learn.tarctpc.com** on TARC's existing host. GitHub Actions tests every push and deploys `main` automatically; see [DEPLOY.md](DEPLOY.md) for the one-time server setup. The manual steps below are the same steps, for reference.
+
 1. Set `APP_ENV=production`, `APP_DEBUG=false` and `APP_URL=https://traveladvisorresourcecenter.com` (or the subdomain you host it on, such as `learn.traveladvisorresourcecenter.com`). Certificate verification links use `APP_URL`.
 2. Use MySQL or PostgreSQL instead of SQLite, and run `php artisan migrate --force` without `--seed`.
 3. Create your admin account with `php artisan tinker`:
