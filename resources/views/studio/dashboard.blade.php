@@ -12,7 +12,7 @@
     @include('partials.stat', ['label' => 'Courses', 'value' => $stats['courses']])
 </div>
 
-<div class="mt-6 grid gap-6 lg:grid-cols-[1fr_20rem]">
+<div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
     <div class="panel p-5">
         <h2 class="font-bold">Enrollments, last 14 days</h2>
         <div class="mt-5">@include('partials.bars', ['data' => $trend, 'aria' => 'Daily enrollments for the last 14 days'])</div>

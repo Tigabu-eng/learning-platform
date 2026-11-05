@@ -1,7 +1,7 @@
 @extends('layouts.studio', ['title' => 'Settings – '.$course->title])
 @section('breadcrumb')<a href="{{ route('studio.courses.index') }}" class="hover:text-ink">Courses</a> / {{ $course->title }} / Settings @endsection
 @section('content')
-<form method="POST" action="{{ route('studio.courses.update', $course) }}" enctype="multipart/form-data" class="grid max-w-5xl gap-6 lg:grid-cols-[1fr_20rem]">
+<form method="POST" action="{{ route('studio.courses.update', $course) }}" enctype="multipart/form-data" class="grid max-w-5xl grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
     @csrf @method('PUT')
     <div class="space-y-6">
         <section class="panel space-y-5 p-6">

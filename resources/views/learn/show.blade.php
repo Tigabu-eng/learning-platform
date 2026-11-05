@@ -9,7 +9,7 @@
     $lock = $locks[$lesson->id];
 @endphp
 <header class="sticky top-0 z-20 flex h-14 items-center gap-4 border-b border-line bg-white px-4">
-    <a href="{{ $manager ? route('studio.curriculum', $course) : route('dashboard') }}" class="text-sm font-semibold text-muted hover:text-ink">← {{ $manager ? 'Back to studio' : 'My learning' }}</a>
+    <a href="{{ $manager ? route('studio.curriculum', $course) : route('dashboard') }}" class="-my-2 inline-block shrink-0 py-2 text-sm font-semibold text-muted hover:text-ink">← {{ $manager ? 'Back to studio' : 'My learning' }}</a>
     <div class="min-w-0 flex-1 truncate text-center text-sm font-bold">{{ $course->title }}</div>
     @if ($enrollment)
         <div class="flex items-center gap-2 text-sm">
@@ -21,7 +21,7 @@
     @endif
 </header>
 
-<div class="lg:grid lg:grid-cols-[20rem_1fr]">
+<div class="lg:grid lg:grid-cols-[20rem_minmax(0,1fr)]">
     <aside class="border-b border-line bg-mist/60 lg:sticky lg:top-14 lg:h-[calc(100vh-3.5rem)] lg:overflow-y-auto lg:border-b-0 lg:border-r">
         <details class="lg:hidden"><summary class="cursor-pointer px-5 py-3 text-sm font-semibold">Course contents</summary><div>@include('learn.path')</div></details>
         <div class="hidden lg:block">@include('learn.path')</div>

@@ -2,8 +2,8 @@
 @section('breadcrumb')<a href="{{ route('studio.courses.index') }}" class="hover:text-ink">Courses</a> / {{ $course->title }} / Curriculum @endsection
 @section('content')
 @php $hasExam = $course->chapters->flatMap->lessons->contains('type', 'exam'); @endphp
-<div class="grid gap-6 xl:grid-cols-[1fr_18rem]">
-    <div>
+<div class="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_18rem]">
+    <div class="min-w-0">
         <div data-curriculum data-reorder-url="{{ route('studio.curriculum.reorder', $course) }}" class="space-y-4">
             @foreach ($course->chapters as $chapter)
                 <section data-chapter="{{ $chapter->id }}" class="panel">

@@ -3,8 +3,8 @@
 @section('content')
 <div class="flex flex-wrap items-center justify-between gap-3">
     <h1 class="text-2xl font-bold">Users</h1>
-    <form class="flex gap-2">
-        <label class="sr-only" for="q">Search</label><input id="q" name="q" value="{{ request('q') }}" class="input w-56" placeholder="Name or email">
+    <form class="flex w-full flex-wrap gap-2 sm:w-auto">
+        <label class="sr-only" for="q">Search</label><input id="q" name="q" value="{{ request('q') }}" class="input min-w-0 flex-1 sm:w-56 sm:flex-none" placeholder="Name or email">
         <label class="sr-only" for="role">Role</label>
         <select id="role" name="role" class="input w-auto" onchange="this.form.submit()"><option value="">All roles</option>@foreach (['admin', 'instructor', 'student'] as $r)<option value="{{ $r }}" @selected(request('role') === $r)>{{ ucfirst($r) }}s</option>@endforeach</select>
     </form>

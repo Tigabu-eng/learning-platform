@@ -8,7 +8,7 @@
 <form method="POST" action="{{ $action }}" data-question-form class="space-y-4">
     @csrf @if ($method !== 'POST') @method($method) @endif
     <input type="hidden" name="_qid" value="{{ $uid }}">
-    <div class="grid gap-4 sm:grid-cols-[1fr_8rem]">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-[minmax(0,1fr)_8rem]">
         <div><label class="label" for="type-{{ $uid }}">Question type</label>
             <select id="type-{{ $uid }}" name="type" class="input">@foreach (\App\Models\Question::TYPES as $k => $v)<option value="{{ $k }}" @selected($type === $k)>{{ $v }}</option>@endforeach</select></div>
         <div><label class="label" for="points-{{ $uid }}">Points</label><input id="points-{{ $uid }}" name="points" type="number" min="1" max="100" value="{{ $question?->points ?? 1 }}" class="input"></div>
@@ -29,7 +29,7 @@
                 </div>
             @endforeach
         </div>
-        <button type="button" data-add-option class="mt-2 text-sm font-semibold text-pine">+ Add choice</button>
+        <button type="button" data-add-option class="mt-1 py-2 text-sm font-semibold text-pine">+ Add choice</button>
     </div>
 
     <div data-show-for="true_false">

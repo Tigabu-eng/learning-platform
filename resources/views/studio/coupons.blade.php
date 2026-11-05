@@ -2,7 +2,7 @@
 @section('breadcrumb', 'Coupons')
 @section('content')
 <h1 class="text-2xl font-bold">Coupons</h1>
-<div class="mt-6 grid gap-6 xl:grid-cols-[1fr_20rem]">
+<div class="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_20rem]">
     <div class="panel overflow-x-auto">
         @if ($coupons->isEmpty())
             <p class="p-8 text-center text-muted">No coupons yet. Create one to run a launch discount.</p>

@@ -8,7 +8,7 @@
     @include('partials.stat', ['label' => 'Courses', 'value' => $stats['courses'], 'sub' => $stats['published'].' published'])
     @include('partials.stat', ['label' => 'Enrollments', 'value' => number_format($stats['enrollments']), 'sub' => $stats['certificates'].' certificates issued'])
 </div>
-<div class="mt-6 grid gap-6 lg:grid-cols-[1fr_22rem]">
+<div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
     <div class="panel p-5"><h2 class="font-bold">Revenue by month ({{ config('school.currency') }})</h2><div class="mt-5">@include('partials.bars', ['data' => $revenue, 'money' => true, 'aria' => 'Revenue by month'])</div></div>
     <div class="panel p-5">
         <h2 class="font-bold">Most popular courses</h2>
@@ -20,7 +20,7 @@
     </div>
 </div>
 <div class="panel mt-6 overflow-x-auto">
-    <div class="flex items-center justify-between px-5 pt-5"><h2 class="font-bold">Recent orders</h2><a href="{{ route('admin.orders') }}" class="text-sm font-semibold text-pine">All orders</a></div>
+    <div class="flex items-center justify-between px-5 pt-5"><h2 class="font-bold">Recent orders</h2><a href="{{ route('admin.orders') }}" class="-my-2 py-2 text-sm font-semibold text-pine">All orders</a></div>
     <div class="mt-2">@include('partials.orders-table', ['orders' => $recentOrders])</div>
 </div>
 @endsection

@@ -64,7 +64,7 @@
             @endforeach
         </ol>
         <div class="mt-8 flex items-center justify-between">
-            <a href="{{ route('learn.lesson', [$course, $lesson]) }}" data-save-leave class="text-sm font-semibold text-muted hover:text-ink">Save and leave</a>
+            <a href="{{ route('learn.lesson', [$course, $lesson]) }}" data-save-leave class="inline-block py-2 text-sm font-semibold text-muted hover:text-ink">Save and leave</a>
             <button class="{{ $quiz->is_final ? 'btn-accent' : 'btn-primary' }} px-6">Submit {{ $quiz->is_final ? 'exam' : 'quiz' }}</button>
         </div>
     </form>

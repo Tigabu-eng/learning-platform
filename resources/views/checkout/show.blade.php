@@ -1,6 +1,6 @@
 @extends('layouts.app', ['title' => 'Checkout'])
 @section('content')
-<div class="mx-auto grid max-w-4xl gap-8 md:grid-cols-[1fr_20rem]">
+<div class="mx-auto grid max-w-4xl grid-cols-1 gap-8 md:grid-cols-[minmax(0,1fr)_20rem]">
     <div>
         <h1 class="text-3xl font-extrabold">{{ $course->isFree() ? 'Enroll' : 'Checkout' }}</h1>
         <div class="panel mt-6 flex gap-4 p-5">

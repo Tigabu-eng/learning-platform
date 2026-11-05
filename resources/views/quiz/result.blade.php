@@ -8,7 +8,7 @@
     $certificate = $enrollment->certificate;
 @endphp
 <div class="mx-auto max-w-3xl">
-    <a href="{{ route('learn.lesson', [$course, $lesson]) }}" class="text-sm font-semibold text-muted hover:text-ink">← Back to {{ $lesson->title }}</a>
+    <a href="{{ route('learn.lesson', [$course, $lesson]) }}" class="-my-2 inline-block py-2 text-sm font-semibold text-muted hover:text-ink">← Back to {{ $lesson->title }}</a>
 
     <div @class(['celebrate mt-4 rounded-xl border p-8', 'border-pine/30 bg-pine-soft' => $attempt->passed, 'border-brick/25 bg-brick-soft' => ! $attempt->passed])>
         <div class="flex flex-wrap items-end justify-between gap-6">

@@ -196,3 +196,12 @@ document.querySelectorAll('[data-topic-filter]').forEach((select) => {
         });
     });
 });
+
+// Menus built on <details data-menu>: close on outside tap, Escape, or choosing a link.
+document.addEventListener('click', (e) => {
+    document.querySelectorAll('details[data-menu][open]').forEach((d) => { if (!d.contains(e.target)) d.open = false; });
+});
+document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    document.querySelectorAll('details[data-menu][open]').forEach((d) => { d.open = false; d.querySelector('summary')?.focus(); });
+});

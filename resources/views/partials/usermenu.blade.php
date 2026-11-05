@@ -1,8 +1,8 @@
 @auth
-    <details class="relative">
+    <details class="relative" data-menu>
         <summary class="flex cursor-pointer list-none items-center gap-2 rounded-full py-1 pl-1 pr-3 hover:bg-mist">
             <span class="grid size-8 place-items-center rounded-full bg-pine text-xs font-bold text-white">{{ auth()->user()->initials() }}</span>
-            <span class="hidden text-sm font-semibold sm:inline">{{ auth()->user()->name }}</span>
+            <span class="hidden max-w-40 truncate whitespace-nowrap text-sm font-semibold sm:inline">{{ auth()->user()->name }}</span>
         </summary>
         <div class="absolute right-0 z-30 mt-2 w-56 overflow-hidden rounded-xl border border-line bg-white py-1 text-sm shadow-lg">
             <a class="block px-4 py-2 hover:bg-mist" href="{{ route('dashboard') }}">My learning</a>
