@@ -18,6 +18,10 @@ class Question extends Model
     public function quiz() { return $this->belongsTo(Quiz::class); }
     public function options() { return $this->hasMany(QuestionOption::class)->orderBy('position'); }
 
+    /** Editor HTML is sanitized before it is stored. */
+    public function setPromptAttribute(?string $value): void { $this->attributes['prompt'] = \App\Support\RichText::clean($value) ?? ''; }
+    public function setExplanationAttribute(?string $value): void { $this->attributes['explanation'] = \App\Support\RichText::clean($value); }
+
     public function acceptedAnswers(): array
     {
         return collect(preg_split('/\r?\n/', (string) $this->accepted_answers))

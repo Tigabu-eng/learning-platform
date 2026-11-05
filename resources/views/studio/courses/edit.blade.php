@@ -8,7 +8,7 @@
             <h2 class="font-bold">Sales page</h2>
             <div><label class="label" for="title">Title</label><input id="title" name="title" class="input" value="{{ old('title', $course->title) }}" required></div>
             <div><label class="label" for="subtitle">Summary</label><input id="subtitle" name="subtitle" class="input" value="{{ old('subtitle', $course->subtitle) }}"></div>
-            <div><label class="label" for="description">Description</label><textarea id="description" name="description" rows="10" class="input font-[inherit]">{{ old('description', $course->description) }}</textarea><p class="hint">Supports Markdown: **bold**, ## headings, - lists, [links](https://…).</p></div>
+            <div><label class="label" for="description">Description</label><textarea id="description" name="description" rows="10" class="input font-[inherit]" data-rich>{{ \App\Support\RichText::forEditor(old('description', $course->description)) }}</textarea></div>
             <div><label class="label" for="slug">Web address</label>
                 <div class="flex items-center rounded-lg border border-line bg-mist text-sm"><span class="pl-3 text-muted">{{ url('/courses') }}/</span><input id="slug" name="slug" class="input rounded-l-none border-0 border-l" value="{{ old('slug', $course->slug) }}" required></div>
             </div>

@@ -31,6 +31,9 @@ class Course extends Model
 
     public function getRouteKeyName(): string { return 'slug'; }
 
+    /** Editor HTML is sanitized before it is stored. */
+    public function setDescriptionAttribute(?string $value): void { $this->attributes['description'] = \App\Support\RichText::clean($value); }
+
     public function instructor() { return $this->belongsTo(User::class, 'instructor_id'); }
     public function chapters() { return $this->hasMany(Chapter::class)->orderBy('position'); }
     public function lessons() { return $this->hasMany(Lesson::class); }

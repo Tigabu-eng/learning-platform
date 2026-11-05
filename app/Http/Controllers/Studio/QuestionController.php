@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Lesson;
 use App\Models\Question;
 use App\Services\QuestionImporter;
+use App\Support\RichText;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -60,11 +61,14 @@ class QuestionController extends Controller
         $data = $request->validate([
             'type' => ['required', Rule::in(array_keys(Question::TYPES))],
             'topic' => 'nullable|string|max:120',
-            'prompt' => 'required|string|max:5000',
-            'explanation' => 'nullable|string|max:5000',
+            'prompt' => 'required|string|max:20000',
+            'explanation' => 'nullable|string|max:20000',
             'points' => 'required|integer|min:1|max:100',
             'accepted_answers' => 'nullable|required_if:type,short|string|max:2000',
         ], ['accepted_answers.required_if' => 'Add at least one accepted answer.']);
+        if (RichText::plain(RichText::clean($data['prompt'])) === '' && ! str_contains($data['prompt'], '<img')) {
+            throw ValidationException::withMessages(['prompt' => 'Write the question.']);
+        }
         $data['topic'] = QuestionImporter::normalizeTopic($data['topic'] ?? null) ?: null;
         return $data;
     }

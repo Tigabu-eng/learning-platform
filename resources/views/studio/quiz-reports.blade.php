@@ -21,7 +21,7 @@
                 <tbody>
                 @foreach ($r['questions'] as $i => $q)
                     <tr>
-                        <td><span class="mr-2 text-muted">{{ $i + 1 }}.</span>{{ \Illuminate\Support\Str::limit($q['question']->prompt, 110) }}</td>
+                        <td><span class="mr-2 text-muted">{{ $i + 1 }}.</span>{{ \Illuminate\Support\Str::limit(\App\Support\RichText::plain($q['question']->prompt), 110) }}</td>
                         <td>{{ $q['answered'] }}</td>
                         <td>@if ($q['rate'] !== null)
                             <div class="flex items-center gap-2"><div class="h-2 flex-1 rounded-full bg-mist"><div class="h-2 rounded-full {{ $q['rate'] < 50 ? 'bg-brick' : 'bg-pine' }}" style="width: {{ $q['rate'] }}%"></div></div><span class="w-10 text-right text-xs font-semibold">{{ $q['rate'] }}%</span></div>

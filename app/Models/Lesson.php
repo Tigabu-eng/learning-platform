@@ -24,12 +24,15 @@ class Lesson extends Model
     public function chapter() { return $this->belongsTo(Chapter::class); }
     public function quiz() { return $this->hasOne(Quiz::class); }
 
+    /** Editor HTML is sanitized before it is stored. */
+    public function setContentAttribute(?string $value): void { $this->attributes['content'] = \App\Support\RichText::clean($value); }
+
     public function isAssessment(): bool { return in_array($this->type, ['quiz', 'exam'], true); }
     public function typeLabel(): string { return self::TYPES[$this->type] ?? ucfirst($this->type); }
 
     public function renderedContent(): string
     {
-        return $this->content ? Str::markdown($this->content, ['html_input' => 'escape', 'allow_unsafe_links' => false]) : '';
+        return $this->content ? (string) \App\Support\RichText::html($this->content) : '';
     }
 
     /** Converts YouTube/Vimeo links into embeddable URLs; returns null for direct files. */
