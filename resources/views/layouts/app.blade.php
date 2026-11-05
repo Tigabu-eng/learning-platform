@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>@include('partials.head')</head>
-<body class="min-h-screen">
+<body class="flex min-h-screen min-h-svh flex-col">
 <header class="border-b border-line bg-white">
     @php
         $links = array_filter([
@@ -36,23 +36,46 @@
         </div>
     </div>
 </header>
-<main class="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+<main class="mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:px-6">
     @include('partials.flash')
     @yield('content')
 </main>
-<footer class="border-t border-line bg-white">
-    <div class="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 text-sm text-muted sm:px-6 md:flex-row md:items-center md:justify-between">
-        <div>
-            <p class="font-semibold text-ink">{{ config('app.name') }} ({{ config('school.brand.short_name') }})™</p>
-            <p class="mt-1">Resources for travel professionals at every stage of their journey.</p>
+{{-- Footer: TARC navy band, always at the bottom of the screen on short pages (body is a flex column). --}}
+<footer class="bg-pine-dark text-[15px] text-white/75">
+    <div class="mx-auto grid max-w-6xl grid-cols-2 gap-x-6 gap-y-8 px-4 py-10 sm:px-6 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] md:py-12">
+        <div class="col-span-2 md:col-span-1">
+            <a href="{{ config('school.brand.site_url') }}" class="inline-flex items-center gap-3 text-white">
+                <span class="grid size-12 shrink-0 place-items-center rounded-full bg-white">@include('partials.mark', ['class' => 'size-10'])</span>
+                <span class="leading-tight">
+                    <span class="block font-bold">{{ config('app.name') }}</span>
+                    <span class="block text-sm text-white/70">{{ config('school.brand.short_name') }}™ Learning</span>
+                </span>
+            </a>
+            <p class="mt-4 max-w-sm leading-relaxed">Resources for travel professionals at every stage of their journey.</p>
         </div>
-        <nav class="-mx-2 flex flex-wrap gap-x-2 font-semibold" aria-label="TARC links">
-            <a href="{{ config('school.brand.site_url') }}" class="rounded-lg px-2 py-2 hover:text-ink">TARC main site</a>
-            <a href="{{ config('school.brand.community_url') }}" class="rounded-lg px-2 py-2 hover:text-ink">Travel Pro Community</a>
-            <a href="mailto:{{ config('school.brand.support_email') }}" class="rounded-lg px-2 py-2 hover:text-ink">Contact {{ config('school.brand.support_email') }}</a>
+        <nav aria-label="Learning">
+            <h2 class="text-xs font-semibold uppercase tracking-wider text-white">Learning</h2>
+            <ul class="mt-2">
+                <li><a href="{{ route('home') }}" class="-mx-1 inline-block px-1 py-1.5 hover:text-white hover:underline">Courses</a></li>
+                @auth<li><a href="{{ route('dashboard') }}" class="-mx-1 inline-block px-1 py-1.5 hover:text-white hover:underline">My learning</a></li>@endauth
+                <li><a href="{{ route('certificates.verify') }}" class="-mx-1 inline-block px-1 py-1.5 hover:text-white hover:underline">Verify a certificate</a></li>
+            </ul>
+        </nav>
+        <nav aria-label="TARC">
+            <h2 class="text-xs font-semibold uppercase tracking-wider text-white">TARC</h2>
+            <ul class="mt-2">
+                <li><a href="{{ config('school.brand.site_url') }}" class="-mx-1 inline-block px-1 py-1.5 hover:text-white hover:underline">Main site</a></li>
+                <li><a href="{{ config('school.brand.community_url') }}" class="-mx-1 inline-block px-1 py-1.5 hover:text-white hover:underline">Travel Pro Community</a></li>
+                <li><a href="mailto:{{ config('school.brand.support_email') }}" class="-mx-1 inline-block px-1 py-1.5 hover:text-white hover:underline">Contact us</a></li>
+            </ul>
         </nav>
     </div>
-    <p class="mx-auto max-w-6xl px-4 pb-8 text-xs text-muted sm:px-6">© {{ date('Y') }} {{ config('app.name') }}</p>
+    <div class="border-t border-white/15">
+        <div class="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-5 text-sm text-white/60 sm:flex-row sm:justify-between sm:px-6">
+            <p>© {{ date('Y') }} {{ config('app.name') }}. All rights reserved.</p>
+            <p>Questions? <a href="mailto:{{ config('school.brand.support_email') }}" class="text-white/80 underline-offset-2 hover:text-white hover:underline">{{ config('school.brand.support_email') }}</a></p>
+        </div>
+    </div>
 </footer>
 @include('partials.toast')
 </body>
