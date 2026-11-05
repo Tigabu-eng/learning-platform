@@ -14,7 +14,7 @@
     </div>
 </div>
 
-<form method="POST" action="{{ route('studio.lessons.update', $lesson) }}" enctype="multipart/form-data" class="grid max-w-6xl gap-6 lg:grid-cols-[1fr_19rem]">
+<form method="POST" action="{{ route('studio.lessons.update', $lesson) }}" enctype="multipart/form-data" class="grid max-w-6xl grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_19rem]">
     @csrf @method('PUT')
     <div class="space-y-6">
         <section class="panel space-y-5 p-6">
@@ -42,7 +42,7 @@
         @if ($quiz)
             <section class="panel space-y-5 p-6">
                 <h2 class="font-bold">{{ ucfirst($noun) }} settings</h2>
-                <div class="grid gap-4 sm:grid-cols-3">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     <div><label class="label" for="passing_score">Pass mark (%)</label><input id="passing_score" name="passing_score" type="number" min="0" max="100" class="input" value="{{ old('passing_score', $quiz->passing_score) }}"></div>
                     <div><label class="label" for="max_attempts">Attempts allowed</label><input id="max_attempts" name="max_attempts" type="number" min="1" class="input" value="{{ old('max_attempts', $quiz->max_attempts) }}" placeholder="Unlimited"></div>
                     <div><label class="label" for="time_limit_minutes">Time limit (min)</label><input id="time_limit_minutes" name="time_limit_minutes" type="number" min="1" class="input" value="{{ old('time_limit_minutes', $quiz->time_limit_minutes) }}" placeholder="No limit"></div>
@@ -64,7 +64,7 @@
                         <label class="flex gap-3"><input type="radio" name="access_mode" value="password" class="check mt-0.5" @checked($mode === 'password')>
                             <span><span class="block text-sm font-semibold">One shared password</span><span class="text-xs text-muted">The proctor gives students the password. Anyone who has it can use it, so change it after each exam session.</span></span></label>
                         <label class="flex gap-3"><input type="radio" name="access_mode" value="code" class="check mt-0.5" @checked($mode === 'code')>
-                            <span><span class="block text-sm font-semibold">One-time code per student</span><span class="text-xs text-muted">Generate a code for each student on their page under <a href="{{ route('studio.students', $course) }}" class="font-semibold text-pine">Students</a> and send it to their proctor. Each code works once, for that student only, until it expires.</span></span></label>
+                            <span><span class="block text-sm font-semibold">One-time code per student</span><span class="text-xs text-muted">Generate a code for each student on their page under <a href="{{ route('studio.students', $course) }}" class="py-1.5 font-semibold text-pine">Students</a> and send it to their proctor. Each code works once, for that student only, until it expires.</span></span></label>
                     </div>
                     <div class="mt-3 max-w-sm">
                         <label class="label" for="access_password">Shared password</label>
@@ -73,7 +73,7 @@
                         <p class="hint">Case-sensitive. Instructors and admins can start the {{ $noun }} without it, to preview.</p>
                     </div>
                 </fieldset>
-                <div class="grid gap-3 sm:grid-cols-2">
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="shuffle_questions" value="1" class="check" @checked($quiz->shuffle_questions)> Shuffle question order</label>
                     <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="shuffle_options" value="1" class="check" @checked($quiz->shuffle_options)> Shuffle answer choices</label>
                     <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="show_answers" value="1" class="check" @checked($quiz->show_answers)> Show correct answers after submitting</label>
@@ -166,7 +166,7 @@
             @error('text')<p class="mt-3 rounded-lg bg-brick-soft px-3 py-2 text-sm font-semibold text-brick">{{ $message }}</p>@enderror
             <form method="POST" action="{{ route('studio.questions.import.preview', $lesson) }}" enctype="multipart/form-data" class="mt-4 space-y-4">
                 @csrf
-                <div class="grid gap-4 md:grid-cols-2">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div><label class="label" for="import-file">File</label>
                         <input id="import-file" name="file" type="file" accept=".xlsx,.csv,.docx,.txt" class="text-sm">
                         <p class="hint">.xlsx, .csv, .docx or .txt. Old .xls and .doc files: use Save As in Excel or Word first.</p></div>
@@ -178,7 +178,7 @@
                 <button class="btn-primary btn-sm">Preview import</button>
             </form>
             <details class="mt-4 text-sm">
-                <summary class="cursor-pointer font-semibold text-pine">Format guide</summary>
+                <summary class="-my-2 cursor-pointer py-2 font-semibold text-pine">Format guide</summary>
                 <div class="mt-3 grid gap-5 md:grid-cols-2">
                     <div>
                         <p class="font-semibold">Excel or CSV: one row per question</p>

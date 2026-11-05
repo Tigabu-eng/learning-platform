@@ -1,6 +1,6 @@
 @extends('layouts.app', ['title' => 'Courses'])
 @section('content')
-<section class="mb-12 grid items-end gap-8 md:grid-cols-[1fr_auto]">
+<section class="mb-12 grid items-end grid-cols-1 gap-8 md:grid-cols-[minmax(0,1fr)_auto]">
     <div>
         <p class="text-sm font-semibold text-pine">TARC learning</p>
         <h1 class="mt-2 max-w-2xl text-4xl font-extrabold leading-[1.05] sm:text-5xl">Your travel business deserves structure, growth and support.</h1>
@@ -18,7 +18,7 @@
         @if (request('q'))<a href="{{ route('home') }}" class="mt-3 inline-block text-sm font-semibold text-pine">Show all courses</a>@endif
     </div>
 @else
-    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         @foreach ($courses as $course) @include('catalog.card') @endforeach
     </div>
 @endif

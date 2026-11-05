@@ -1,7 +1,7 @@
 @extends('layouts.studio', ['title' => 'Students – '.$course->title])
 @section('breadcrumb')<a href="{{ route('studio.courses.index') }}" class="hover:text-ink">Courses</a> / {{ $course->title }} / Students @endsection
 @section('content')
-<div class="grid gap-6 xl:grid-cols-[1fr_18rem]">
+<div class="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_18rem]">
     <div class="panel overflow-x-auto">
         <div class="flex flex-wrap items-center justify-between gap-3 px-5 pt-5">
             <h2 class="font-bold">{{ $enrollments->count() }} {{ \Illuminate\Support\Str::plural('student', $enrollments->count()) }}</h2>

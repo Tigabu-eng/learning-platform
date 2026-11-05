@@ -96,7 +96,7 @@ The code works once. Please enter it on the student's screen at the start of the
             <tbody>@foreach ($attempts as $a)
                 <tr><td>{{ $a->quiz->lesson->title }}</td><td class="whitespace-nowrap text-xs">{{ $a->submitted_at->format('M j, g:i a') }}</td>
                     <td><span class="font-semibold">{{ $a->score }}%</span> @if ($a->passed)<span class="badge-green ml-1">Pass</span>@else<span class="badge-red ml-1">Fail</span>@endif</td>
-                    <td><a href="{{ route('attempts.show', $a) }}" class="text-xs font-semibold text-pine">View</a></td></tr>
+                    <td><a href="{{ route('attempts.show', $a) }}" class="-my-1.5 inline-block py-1.5 text-xs font-semibold text-pine">View</a></td></tr>
             @endforeach</tbody>
         </table>@endif
     </div>

@@ -1,5 +1,5 @@
 {{-- Generated cover: the course's own initial on a lesson-path motif. --}}
-@php $hue = crc32($course->slug) % 3; $bg = ['#1f6f5c', '#24504a', '#3c6b3a'][$hue]; @endphp
+@php $hue = crc32($course->slug) % 3; $bg = ['#0e4d68', '#003c54', '#2f5f73'][$hue]; @endphp
 <svg viewBox="0 0 320 180" class="size-full" role="img" aria-label="{{ $course->title }}">
     <rect width="320" height="180" fill="{{ $bg }}"/>
     <path d="M-10 150 C 60 150, 70 60, 140 70 S 230 140, 330 40" stroke="#d9971a" stroke-width="3" fill="none" opacity=".9"/>

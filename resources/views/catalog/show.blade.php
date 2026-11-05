@@ -5,7 +5,7 @@
     $minutes = $course->chapters->flatMap->lessons->sum('duration_minutes');
     $final = $course->chapters->flatMap->lessons->firstWhere('type', 'exam');
 @endphp
-<div class="grid gap-10 lg:grid-cols-[1fr_22rem]">
+<div class="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_22rem]">
     <div class="min-w-0">
         @unless ($course->isPublished())<div class="mb-4"><span class="badge-grey">Draft — only you can see this page</span></div>@endunless
         <h1 class="text-4xl font-extrabold leading-tight">{{ $course->title }}</h1>

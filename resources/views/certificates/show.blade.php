@@ -5,7 +5,8 @@
 <style>
     @page { size: A4 landscape; margin: 0; }
     @media print { .no-print { display: none !important; } body { background: #fff !important; } .sheet { box-shadow: none !important; margin: 0 !important; } }
-    .sheet { aspect-ratio: 297 / 210; }
+    /* A4 landscape on tablets, desktops and paper; on phones the sheet grows to fit its text. */
+    @media (min-width: 640px), print { .sheet { aspect-ratio: 297 / 210; } }
 </style>
 </head>
 <body class="bg-mist">
@@ -18,16 +19,13 @@
 </div>
 <div class="sheet relative mx-auto mb-10 w-full max-w-5xl overflow-hidden bg-white shadow-xl">
     <svg class="absolute inset-0 size-full" viewBox="0 0 297 210" preserveAspectRatio="none" aria-hidden="true">
-        <rect x="8" y="8" width="281" height="194" fill="none" stroke="#1f6f5c" stroke-width="1.2"/>
+        <rect x="8" y="8" width="281" height="194" fill="none" stroke="#003c54" stroke-width="1.2"/>
         <rect x="11" y="11" width="275" height="188" fill="none" stroke="#d9971a" stroke-width=".4"/>
         <path d="M11 192 C 70 192, 85 180, 140 182 S 232 197, 286 184" stroke="#d9971a" stroke-width=".7" fill="none" opacity=".5"/>
         @foreach ([[44, 190.6], [140, 182], [228, 192.4], [286, 184]] as [$x, $y])<circle cx="{{ $x }}" cy="{{ $y }}" r="1.6" fill="#d9971a" opacity=".55"/>@endforeach
     </svg>
-    <div class="relative flex h-full flex-col items-center justify-center px-[9%] text-center">
-        <div class="flex items-center gap-2 text-[clamp(10px,1.4vw,14px)] font-bold text-pine">
-            @include('partials.mark', ['class' => 'size-[1.8em]'])
-            {{ config('app.name') }} ({{ config('school.brand.short_name') }})™
-        </div>
+    <div class="relative flex h-full flex-col items-center justify-center px-[9%] py-10 text-center sm:py-0">
+        <img src="{{ asset('images/tarc-logo@2x.png') }}" width="1536" height="491" alt="{{ config('app.name') }} ({{ config('school.brand.short_name') }})" class="h-[clamp(34px,7vw,72px)] w-auto">
         <div class="mt-[3%] text-[clamp(12px,1.9vw,20px)] font-semibold text-muted">Certificate of completion</div>
         <div class="mt-[2.5%] text-[clamp(26px,5.4vw,58px)] font-extrabold leading-none tracking-tight">{{ $certificate->user->name }}</div>
         <div class="mt-[3%] text-[clamp(11px,1.5vw,16px)] text-muted">has successfully completed</div>
@@ -40,7 +38,7 @@
             <div><div class="mx-auto grid size-[clamp(40px,6vw,72px)] place-items-center rounded-full bg-saffron text-[clamp(8px,1vw,11px)] font-extrabold leading-tight text-ink">VERIFIED</div></div>
             <div class="text-right"><div class="font-semibold">{{ $certificate->course->instructor->name }}</div><div class="border-t border-line pt-1 text-muted">Instructor</div></div>
         </div>
-        <div class="mt-[4%] text-[clamp(8px,1vw,11px)] text-muted">Certificate ID {{ $certificate->code }} · Verify at {{ route('certificates.verify') }}?code={{ $certificate->code }}</div>
+        <div class="mt-[4%] break-all text-[clamp(10px,1vw,11px)] text-muted sm:break-normal">Certificate ID {{ $certificate->code }} · Verify at {{ route('certificates.verify') }}?code={{ $certificate->code }}</div>
     </div>
 </div>
 </body>

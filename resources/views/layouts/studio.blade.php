@@ -33,7 +33,7 @@
     </aside>
     <div class="min-w-0 flex-1">
         <header class="flex h-16 items-center justify-between gap-4 border-b border-line bg-white px-4 sm:px-8">
-            <div class="min-w-0 truncate text-sm text-muted">@yield('breadcrumb')</div>
+            <div class="min-w-0 truncate text-sm text-muted [&_a]:py-3">@yield('breadcrumb')</div>
             @include('partials.usermenu')
         </header>
         <main class="px-4 py-8 sm:px-8">
