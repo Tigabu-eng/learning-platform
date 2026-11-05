@@ -169,6 +169,20 @@ class RulesAndAccessTest extends TestCase
             ->assertDontSee('javascript:alert(2)', false);
     }
 
+    public function test_rta_seeder_loads_only_the_course_as_a_draft_once(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->seed(\Database\Seeders\RtaCourseSeeder::class);
+        $this->seed(\Database\Seeders\RtaCourseSeeder::class); // second run changes nothing
+
+        $this->assertSame(1, Course::count());
+        $this->assertSame(1, User::count(), 'no demo accounts');
+        $course = Course::first();
+        $this->assertSame(['draft', $admin->id, 13], [$course->status, $course->instructor_id, $course->chapters()->count()]);
+        $this->assertTrue($course->lessons()->where('type', 'exam')->exists());
+        $this->get(route('home'))->assertDontSee($course->title);
+    }
+
     public function test_seeded_demo_school_works(): void
     {
         $this->seed();
