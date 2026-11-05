@@ -25,7 +25,17 @@
             @elseif ($questions === 0)
                 <p class="text-sm text-muted">This {{ $label }} has no questions yet.</p>
             @elseif ($canAttempt)
-                <form method="POST" action="{{ route('quiz.start', [$lesson->course, $lesson]) }}">@csrf
+                @php $locked = $quiz->needsAccessCheck() && ! $lesson->course->canBeManagedBy(auth()->user()); @endphp
+                <form method="POST" action="{{ route('quiz.start', [$lesson->course, $lesson]) }}" class="{{ $locked ? 'w-full max-w-md space-y-3' : '' }}">@csrf
+                    @if ($locked)
+                        <div class="rounded-lg border border-line bg-mist p-4">
+                            <label class="label" for="access_code">{{ $quiz->access_mode === 'code' ? 'Proctor access code' : 'Exam password' }}</label>
+                            <input id="access_code" name="access_code" class="input font-mono text-lg tracking-wider" autocomplete="off" autocapitalize="{{ $quiz->access_mode === 'code' ? 'characters' : 'off' }}" spellcheck="false" required
+                                   placeholder="{{ $quiz->access_mode === 'code' ? 'XXXX-XXXX' : '' }}">
+                            @error('access_code')<p class="mt-2 text-sm font-semibold text-brick">{{ $message }}</p>@enderror
+                            <p class="hint">Your proctor enters this when you’re ready to begin. Questions about proctoring? Email {{ config('school.brand.support_email') }}.</p>
+                        </div>
+                    @endif
                     <button class="{{ $quiz->is_final ? 'btn-accent' : 'btn-primary' }}">{{ $used ? 'Try again' : 'Start '.$label }}</button>
                 </form>
             @elseif (! $passed && $used)

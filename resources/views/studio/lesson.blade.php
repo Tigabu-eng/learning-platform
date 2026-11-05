@@ -56,6 +56,24 @@
                         <p class="mt-1 text-sm font-semibold text-brick">The bank has only {{ $bankSize }} questions, so attempts use all of them.</p>
                     @endif
                 </div>
+                <fieldset class="rounded-lg border border-line p-4">
+                    <legend class="px-1 text-sm font-semibold">Who can start the {{ $noun }}</legend>
+                    @php $mode = old('access_mode', $quiz->access_mode ?? 'open'); @endphp
+                    <div class="space-y-2.5">
+                        <label class="flex gap-3"><input type="radio" name="access_mode" value="open" class="check mt-0.5" @checked($mode === 'open')>
+                            <span><span class="block text-sm font-semibold">Any enrolled student</span><span class="text-xs text-muted">No password needed.</span></span></label>
+                        <label class="flex gap-3"><input type="radio" name="access_mode" value="password" class="check mt-0.5" @checked($mode === 'password')>
+                            <span><span class="block text-sm font-semibold">One shared password</span><span class="text-xs text-muted">The proctor gives students the password. Anyone who has it can use it, so change it after each exam session.</span></span></label>
+                        <label class="flex gap-3"><input type="radio" name="access_mode" value="code" class="check mt-0.5" @checked($mode === 'code')>
+                            <span><span class="block text-sm font-semibold">One-time code per student</span><span class="text-xs text-muted">Generate a code for each student on their page under <a href="{{ route('studio.students', $course) }}" class="font-semibold text-pine">Students</a> and send it to their proctor. Each code works once, for that student only, until it expires.</span></span></label>
+                    </div>
+                    <div class="mt-3 max-w-sm">
+                        <label class="label" for="access_password">Shared password</label>
+                        <input id="access_password" name="access_password" class="input font-mono" maxlength="100" autocomplete="off" value="{{ old('access_password', $quiz->access_password) }}" placeholder="Only used with a shared password">
+                        @error('access_password')<p class="mt-1 text-sm font-semibold text-brick">{{ $message }}</p>@enderror
+                        <p class="hint">Case-sensitive. Instructors and admins can start the {{ $noun }} without it, to preview.</p>
+                    </div>
+                </fieldset>
                 <div class="grid gap-3 sm:grid-cols-2">
                     <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="shuffle_questions" value="1" class="check" @checked($quiz->shuffle_questions)> Shuffle question order</label>
                     <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="shuffle_options" value="1" class="check" @checked($quiz->shuffle_options)> Shuffle answer choices</label>

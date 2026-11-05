@@ -3,11 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\Enrollment;
+use App\Models\ExamAccessCode;
 use App\Models\Lesson;
+use App\Models\Quiz;
 use App\Models\QuizAttempt;
 use App\Services\Progress;
 use App\Services\QuizEngine;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\ValidationException;
 
 class QuizController extends Controller
 {
@@ -26,8 +32,49 @@ class QuizController extends Controller
         if (! $open && ! $this->engine->canAttempt($quiz, $enrollment)) {
             return back()->withErrors(['quiz' => 'You’ve used all your attempts for this '.($quiz->is_final ? 'exam' : 'quiz').'.']);
         }
-        $attempt = $this->engine->start($quiz, $enrollment);
+        // A password or proctor code is needed to begin a new attempt (not to resume one).
+        // Instructors and admins previewing their own course skip it.
+        if (! $open && $quiz->needsAccessCheck() && ! $course->canBeManagedBy($request->user())) {
+            $attempt = $this->startWithAccessCheck($request, $quiz, $enrollment);
+        } else {
+            $attempt = $this->engine->start($quiz, $enrollment);
+        }
         return redirect()->route('attempts.show', $attempt);
+    }
+
+    private function startWithAccessCheck(Request $request, Quiz $quiz, Enrollment $enrollment): QuizAttempt
+    {
+        $key = 'exam-access:'.$request->user()->id.':'.$quiz->id;
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            $minutes = (int) ceil(RateLimiter::availableIn($key) / 60);
+            throw ValidationException::withMessages(['access_code' => "Too many wrong tries. Wait $minutes minutes, then try again."]);
+        }
+        $given = (string) $request->input('access_code');
+
+        if ($quiz->access_mode === 'password') {
+            if ($quiz->access_password === null || $quiz->access_password === '' || ! hash_equals($quiz->access_password, trim($given))) {
+                RateLimiter::hit($key, 15 * 60);
+                throw ValidationException::withMessages(['access_code' => 'That password isn’t right. Check it with your proctor.']);
+            }
+            RateLimiter::clear($key);
+            return $this->engine->start($quiz, $enrollment);
+        }
+
+        return DB::transaction(function () use ($quiz, $enrollment, $given, $key) {
+            $wanted = ExamAccessCode::normalize($given);
+            $match = $quiz->accessCodes()->where('enrollment_id', $enrollment->id)
+                ->whereNull('used_at')->whereNull('revoked_at')->where('expires_at', '>', now())
+                ->lockForUpdate()->get()
+                ->first(fn ($c) => $wanted !== '' && hash_equals(ExamAccessCode::normalize($c->code), $wanted));
+            if (! $match) {
+                RateLimiter::hit($key, 15 * 60);
+                throw ValidationException::withMessages(['access_code' => 'That code isn’t valid. Codes work once, for one student, until they expire. Ask your proctor or TARC for a new one.']);
+            }
+            RateLimiter::clear($key);
+            $attempt = $this->engine->start($quiz, $enrollment);
+            $match->update(['used_at' => now(), 'quiz_attempt_id' => $attempt->id]);
+            return $attempt;
+        });
     }
 
     public function show(Request $request, QuizAttempt $attempt)

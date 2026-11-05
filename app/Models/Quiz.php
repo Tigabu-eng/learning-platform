@@ -14,11 +14,23 @@ class Quiz extends Model
         'shuffle_options' => 'boolean',
         'show_answers' => 'boolean',
         'require_all_lessons' => 'boolean',
+        'access_password' => 'encrypted',
     ];
+
+    public const ACCESS_MODES = [
+        'open' => 'No password',
+        'password' => 'One shared password',
+        'code' => 'One-time code per student',
+    ];
+
+    protected $hidden = ['access_password'];
 
     public function lesson() { return $this->belongsTo(Lesson::class); }
     public function questions() { return $this->hasMany(Question::class)->orderBy('position'); }
     public function attempts() { return $this->hasMany(QuizAttempt::class); }
+    public function accessCodes() { return $this->hasMany(ExamAccessCode::class); }
+
+    public function needsAccessCheck(): bool { return $this->access_mode !== 'open'; }
 
     public function totalPoints(): int { return (int) $this->questions()->sum('points'); }
 
