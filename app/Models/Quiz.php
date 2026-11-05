@@ -32,7 +32,7 @@ class Quiz extends Model
     /** Question counts per topic, untagged questions under "". */
     public function topicCounts(): array
     {
-        return $this->questions()->toBase()->selectRaw("coalesce(topic, '') as t, count(*) as n")
+        return $this->questions()->reorder()->toBase()->selectRaw("coalesce(topic, '') as t, count(*) as n")
             ->groupBy('t')->orderBy('t')->pluck('n', 't')->map(fn ($n) => (int) $n)->all();
     }
 }
