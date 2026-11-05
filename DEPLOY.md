@@ -117,7 +117,14 @@ php artisan tinker
 >>> App\Models\User::create(['name' => 'Your Name', 'email' => 'you@tarctpc.com', 'password' => 'a-strong-password', 'role' => 'admin']);
 ```
 
-Production is **not** seeded with the demo accounts.
+Production is **not** seeded with the demo accounts. Never run plain `db:seed` there.
+
+To load the RTA Certification Program outline (13 modules, sample quizzes and final exam) as a **draft**, run this once. It does nothing if the course already exists, and it uses the first admin as instructor unless `RTA_INSTRUCTOR_EMAIL` is set:
+
+```bash
+cd ~/learn.tarctpc.com/current
+php artisan db:seed --class=RtaCourseSeeder --force
+```
 
 ## Rolling back
 
