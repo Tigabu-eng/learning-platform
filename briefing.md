@@ -55,6 +55,7 @@ Before changing anything, read and respect these.
 - **One final exam per course.**
 - **Question banks:** when a quiz sets "questions per attempt", each attempt draws that many questions at random. Every topic gets a share in proportion to its size (largest remainder), and questions the student saw in earlier attempts are used only once unseen ones run out. Scores count only the drawn questions. Topics are normalised, so "4" and "Module 4: Client discovery" both become "Module 4".
 - **Question import** (`app/Services/QuestionImporter.php`): .xlsx, .csv, .docx, .txt or pasted text. Instructors always see a preview first, and questions already in the quiz are skipped.
+- **Exam access:** each quiz or exam is open, behind one shared password (stored encrypted, case-sensitive), or behind one-time codes. Staff generate a code per student on the Studio student page and send it to the proctor the student chose. A code works once, for that student, until it expires, and is linked to the attempt it started. The check applies only when starting a new attempt, not when resuming one. Course staff skip it, and five wrong tries lock the student out for 15 minutes.
 - **Payments:** a student is enrolled only after the payment provider confirms payment. `Checkout::fulfil()` is the single place that marks an order paid, counts coupon use and enrolls the student.
 
 **Permissions:**

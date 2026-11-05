@@ -96,7 +96,9 @@ class CurriculumController extends Controller
             'max_attempts' => 'nullable|integer|min:1|max:100',
             'time_limit_minutes' => 'nullable|integer|min:1|max:600',
             'questions_per_attempt' => 'nullable|integer|min:1|max:1000',
-        ]);
+            'access_mode' => ['nullable', Rule::in(array_keys(Quiz::ACCESS_MODES))],
+            'access_password' => 'nullable|required_if:access_mode,password|string|max:100',
+        ], ['access_password.required_if' => 'Enter the password students will need.']);
         $data['is_preview'] = $request->boolean('is_preview');
 
         if ($request->hasFile('video')) {
@@ -113,7 +115,7 @@ class CurriculumController extends Controller
             $data['file_name'] = $request->file('attachment')->getClientOriginalName();
         }
 
-        $quizFields = ['passing_score', 'max_attempts', 'time_limit_minutes', 'questions_per_attempt'];
+        $quizFields = ['passing_score', 'max_attempts', 'time_limit_minutes', 'questions_per_attempt', 'access_mode', 'access_password'];
         $quizData = array_intersect_key($data, array_flip($quizFields));
         $lessonData = array_diff_key($data, array_flip(array_merge($quizFields, ['video', 'attachment'])));
         if ($lessonData['chapter_id'] != $lesson->chapter_id) {
@@ -124,6 +126,7 @@ class CurriculumController extends Controller
         if ($lesson->quiz) {
             foreach (['shuffle_questions', 'shuffle_options', 'show_answers', 'require_all_lessons'] as $f) $quizData[$f] = $request->boolean($f);
             $quizData['passing_score'] ??= 70;
+            $quizData['access_mode'] ??= 'open';
             $lesson->quiz->update($quizData);
         }
 

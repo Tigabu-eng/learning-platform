@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Studio;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\ExamAccessCode;
 use App\Models\QuizAttempt;
 use App\Models\User;
 use App\Services\Progress;
@@ -45,7 +46,9 @@ class ReportController extends Controller
         $course->load('chapters.lessons.quiz');
         $done = $enrollment->completions()->pluck('completed_at', 'lesson_id');
         $attempts = $enrollment->attempts()->whereNotNull('submitted_at')->with('quiz.lesson')->latest('submitted_at')->get();
-        return view('studio.student', compact('course', 'enrollment', 'done', 'attempts'));
+        $codeQuizzes = ExamAccessController::codeQuizzes($course);
+        $codes = ExamAccessCode::where('enrollment_id', $enrollment->id)->with(['quiz.lesson', 'creator', 'attempt'])->latest('id')->get();
+        return view('studio.student', compact('course', 'enrollment', 'done', 'attempts', 'codeQuizzes', 'codes'));
     }
 
     public function quizzes(Request $request, Course $course)

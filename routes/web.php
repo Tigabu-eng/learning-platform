@@ -11,6 +11,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\Studio\CouponController;
 use App\Http\Controllers\Studio\CourseController;
 use App\Http\Controllers\Studio\CurriculumController;
+use App\Http\Controllers\Studio\ExamAccessController;
 use App\Http\Controllers\Studio\QuestionController;
 use App\Http\Controllers\Studio\QuestionImportController;
 use App\Http\Controllers\Studio\ReportController;
@@ -89,6 +90,8 @@ Route::middleware(['auth', 'role:admin,instructor'])->prefix('studio')->name('st
     Route::get('/courses/{course}/students', [ReportController::class, 'students'])->name('students');
     Route::post('/courses/{course}/students', [ReportController::class, 'enrollStudent'])->name('students.enroll');
     Route::get('/courses/{course}/students/{enrollment}', [ReportController::class, 'student'])->name('students.show');
+    Route::post('/courses/{course}/students/{enrollment}/exam-codes', [ExamAccessController::class, 'store'])->name('exam-codes.store');
+    Route::post('/exam-codes/{code}/revoke', [ExamAccessController::class, 'revoke'])->name('exam-codes.revoke');
     Route::get('/courses/{course}/quiz-reports', [ReportController::class, 'quizzes'])->name('reports.quizzes');
 
     Route::get('/coupons', [CouponController::class, 'index'])->name('coupons.index');
