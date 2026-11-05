@@ -16,7 +16,7 @@
     <div><label class="label" for="topic-{{ $uid }}">Topic or module <span class="font-normal text-muted">(optional)</span></label>
         <input id="topic-{{ $uid }}" name="topic" list="question-topics" maxlength="120" value="{{ old('_qid') == $uid ? old('topic') : $question?->topic }}" class="input" placeholder="e.g. Module 4">
         <p class="hint">When each attempt draws from the bank, every topic gets a fair share of the questions.</p></div>
-    <div><label class="label" for="prompt-{{ $uid }}">Question</label><textarea id="prompt-{{ $uid }}" name="prompt" rows="2" class="input" required>{{ old('_qid') == $uid ? old('prompt') : $question?->prompt }}</textarea></div>
+    <div><label class="label" for="prompt-{{ $uid }}">Question</label><textarea id="prompt-{{ $uid }}" name="prompt" rows="2" class="input" required data-rich="compact">{{ \App\Support\RichText::forEditor(old('_qid') == $uid ? old('prompt') : $question?->prompt, false) }}</textarea>@error('prompt')@if (old('_qid') == $uid)<p class="mt-1 text-sm text-brick">{{ $message }}</p>@endif @enderror</div>
 
     <div data-show-for="single multiple">
         <div class="label">Answer choices <span class="font-normal text-muted">— mark the correct one(s)</span></div>
@@ -46,6 +46,6 @@
         <p class="hint">Matching ignores capital letters and extra spaces.</p>
     </div>
 
-    <div><label class="label" for="exp-{{ $uid }}">Explanation <span class="font-normal text-muted">(optional)</span></label><textarea id="exp-{{ $uid }}" name="explanation" rows="2" class="input" placeholder="Shown to students after they submit">{{ $question?->explanation }}</textarea></div>
+    <div><label class="label" for="exp-{{ $uid }}">Explanation <span class="font-normal text-muted">(optional)</span></label><textarea id="exp-{{ $uid }}" name="explanation" rows="2" class="input" data-rich="compact">{{ \App\Support\RichText::forEditor($question?->explanation, false) }}</textarea><p class="hint">Shown to students after they submit.</p></div>
     <button class="btn-primary btn-sm">{{ $question ? 'Save question' : 'Add question' }}</button>
 </form>

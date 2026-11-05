@@ -44,7 +44,7 @@
                                 <span>Question {{ $i + 1 }}</span>
                                 <span>{{ $q->points }} {{ \Illuminate\Support\Str::plural('point', $q->points) }}@if ($q->type === 'multiple') · select all that apply @endif</span>
                             </div>
-                            <div class="mt-2 whitespace-pre-line text-lg font-semibold leading-snug">{{ $q->prompt }}</div>
+                            <div class="prose-question mt-2 text-lg font-semibold leading-snug">{{ \App\Support\RichText::html($q->prompt, false) }}</div>
                         </legend>
                         <div class="mt-4 space-y-2">
                             @if ($q->type === 'short')

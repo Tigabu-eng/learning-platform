@@ -56,6 +56,7 @@
     .prose-lesson ul { @apply my-4 list-disc pl-6; }
     .prose-lesson ol { @apply my-4 list-decimal pl-6; }
     .prose-lesson li { @apply my-1; }
+    .prose-lesson li > p, .rich-compact li > p, .prose-question li > p { @apply my-0; }
     .prose-lesson a { @apply text-pine underline underline-offset-2; }
     .prose-lesson blockquote { @apply my-5 border-l-4 border-saffron bg-saffron-soft/50 px-4 py-2; }
     .prose-lesson code { @apply rounded bg-mist px-1.5 py-0.5 text-[0.9em]; }
@@ -64,6 +65,42 @@
     .prose-lesson img { @apply my-5 rounded-lg; }
     .prose-lesson table { @apply my-5 w-full text-sm; }
     .prose-lesson th, .prose-lesson td { @apply border border-line px-3 py-2; }
+    .prose-lesson hr { @apply my-6 border-line; }
+    .prose-lesson u { @apply underline-offset-2; }
+
+    /* Question prompts and explanations: compact rich text */
+    .prose-question p { @apply my-0; }
+    .prose-question p + p, .prose-question ul, .prose-question ol, .prose-question blockquote, .prose-question img, .prose-question table { @apply mt-2; }
+    .prose-question ul { @apply list-disc pl-6; }
+    .prose-question ol { @apply list-decimal pl-6; }
+    .prose-question a { @apply text-pine underline underline-offset-2; }
+    .prose-question blockquote { @apply border-l-4 border-line pl-3; }
+    .prose-question h2, .prose-question h3 { @apply font-bold; }
+    .prose-question img { @apply max-h-80 rounded-lg; }
+    .prose-question th, .prose-question td { @apply border border-line px-2 py-1 font-normal; }
+
+    /* Formatting editor (resources/js/rich-editor.js) */
+    .rich-editor { @apply rounded-lg border border-line bg-white; }
+    .rich-editor.is-focused { @apply border-pine ring-2 ring-pine/20; }
+    .rich-toolbar { @apply flex items-center gap-0.5 border-b border-line px-1.5 py-1; }
+    .rich-btn { @apply grid h-8 min-w-8 place-items-center rounded-md px-1.5 text-[15px] text-ink hover:bg-mist; }
+    .rich-btn.is-active { @apply bg-pine-soft text-pine-dark; }
+    .rich-menu { @apply absolute left-0 top-full z-30 mt-1 w-52 rounded-lg border border-line bg-white py-1 shadow-lg; }
+    .rich-menu-item { @apply block w-full px-3 py-1.5 text-left text-sm hover:bg-mist focus:bg-mist focus:outline-none; }
+    .rich-menu-item.is-active { @apply font-semibold text-pine; }
+    .rich-menu-sep { @apply my-1 border-t border-line; }
+    .rich-area .rich-content { @apply min-h-40 px-3.5 py-2.5 text-[15px] outline-none; }
+    .rich-area.prose-lesson .rich-content > :first-child { @apply mt-1; }
+    .rich-area.rich-compact .rich-content { @apply min-h-16; }
+    .rich-compact p { @apply my-1; }
+    .rich-compact ul { @apply my-1 list-disc pl-6; }
+    .rich-compact ol { @apply my-1 list-decimal pl-6; }
+    .rich-compact blockquote { @apply border-l-4 border-line pl-3; }
+    .rich-compact a { @apply text-pine underline; }
+    .rich-compact h2, .rich-compact h3 { @apply font-bold; }
+    .rich-area .ProseMirror-selectednode { @apply outline-2 outline-pine; }
+    .rich-area table { @apply w-full text-sm; }
+    .rich-area th, .rich-area td { @apply border border-line px-2 py-1; }
 }
 
 /* The curriculum path: a vertical spine with a node per lesson. */

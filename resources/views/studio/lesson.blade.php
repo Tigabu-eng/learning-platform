@@ -29,8 +29,7 @@
 
             <div>
                 <label class="label" for="content">{{ $lesson->isAssessment() ? 'Instructions shown before the '.$noun : ($lesson->type === 'video' ? 'Notes below the video' : 'Lesson content') }}</label>
-                <textarea id="content" name="content" rows="{{ $lesson->type === 'text' ? 18 : 6 }}" class="input leading-relaxed">{{ old('content', $lesson->content) }}</textarea>
-                <p class="hint">Markdown: ## heading, **bold**, *italic*, - list, 1. list, > callout, [link](https://…), ![image](https://…)</p>
+                <textarea id="content" name="content" rows="{{ $lesson->type === 'text' ? 18 : 6 }}" class="input leading-relaxed" data-rich>{{ \App\Support\RichText::forEditor(old('content', $lesson->content)) }}</textarea>
             </div>
 
             @if (in_array($lesson->type, ['download', 'text', 'video']))
@@ -136,7 +135,7 @@
                             <span class="drag-handle mt-0.5 text-muted">@include('studio.partials.grip')</span>
                             <span class="w-6 shrink-0 text-sm font-bold text-muted">{{ $i + 1 }}</span>
                             <span class="min-w-0 flex-1">
-                                <span class="line-clamp-2 font-semibold">{{ $question->prompt }}</span>
+                                <span class="line-clamp-2 font-semibold">{{ \App\Support\RichText::plain($question->prompt) }}</span>
                                 <span class="mt-0.5 block text-xs text-muted">@if ($question->topic)<span class="font-semibold text-ink">{{ $question->topic }}</span> · @endif{{ \App\Models\Question::TYPES[$question->type] }} · {{ $question->points }} pt · @if ($question->type === 'short'){{ count($question->acceptedAnswers()) }} accepted answers @else correct: {{ $question->options->where('is_correct', true)->pluck('text')->implode(', ') }} @endif</span>
                             </span>
                             <span class="text-xs font-semibold text-pine">Edit</span>

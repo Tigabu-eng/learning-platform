@@ -39,7 +39,7 @@
                     <span class="text-muted">Question {{ $i + 1 }}</span>
                     @if ($ok)<span class="badge-green">Correct</span>@else<span class="badge-red">{{ $a === null || $a === '' || $a === [] ? 'Not answered' : 'Incorrect' }}</span>@endif
                 </div>
-                <div class="mt-2 whitespace-pre-line font-semibold">{{ $q->prompt }}</div>
+                <div class="prose-question mt-2 font-semibold">{{ \App\Support\RichText::html($q->prompt, false) }}</div>
                 @if ($q->type === 'short')
                     <p class="mt-3 text-sm">Your answer: <span class="font-semibold">{{ is_string($a) && $a !== '' ? $a : '—' }}</span></p>
                     @if ($reveal && ! $ok)<p class="mt-1 text-sm text-pine-dark">Accepted: {{ implode(', ', array_filter(preg_split('/\r?\n/', $q->accepted_answers))) }}</p>@endif
@@ -61,7 +61,7 @@
                     </ul>
                 @endif
                 @if ($reveal && $q->explanation)
-                    <p class="mt-4 border-l-4 border-saffron bg-saffron-soft/50 px-3 py-2 text-sm">{{ $q->explanation }}</p>
+                    <div class="prose-question mt-4 border-l-4 border-saffron bg-saffron-soft/50 px-3 py-2 text-sm">{{ \App\Support\RichText::html($q->explanation, false) }}</div>
                 @endif
             </li>
         @endforeach

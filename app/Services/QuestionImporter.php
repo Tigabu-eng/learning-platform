@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Question;
 use App\Models\Quiz;
+use App\Support\RichText;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -431,7 +432,7 @@ class QuestionImporter
     public function import(Quiz $quiz, array $items): array
     {
         return DB::transaction(function () use ($quiz, $items) {
-            $existing = $quiz->questions()->pluck('prompt')->map(fn ($p) => Question::normalize($p))->flip()->all();
+            $existing = $quiz->questions()->pluck('prompt')->map(fn ($p) => Question::normalize(RichText::plain($p)))->flip()->all();
             $position = (int) ($quiz->questions()->max('position') ?? 0);
             $added = 0; $skipped = 0;
             foreach ($items as $item) {
@@ -459,6 +460,6 @@ class QuestionImporter
     /** Text of questions already in the quiz, normalised, for marking duplicates in the preview. */
     public function existingPrompts(Quiz $quiz): array
     {
-        return $quiz->questions()->pluck('prompt')->map(fn ($p) => Question::normalize($p))->flip()->all();
+        return $quiz->questions()->pluck('prompt')->map(fn ($p) => Question::normalize(RichText::plain($p)))->flip()->all();
     }
 }

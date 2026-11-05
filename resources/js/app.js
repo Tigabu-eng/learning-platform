@@ -1,4 +1,5 @@
 import Sortable from 'sortablejs';
+import { initRichEditors } from './rich-editor';
 
 const csrf = () => document.querySelector('meta[name="csrf-token"]')?.content;
 
@@ -179,6 +180,7 @@ function initConfirm() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    initRichEditors();
     initCurriculum();
     initQuestionSort();
     initQuestionForms();
