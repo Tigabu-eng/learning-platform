@@ -1,7 +1,11 @@
 @extends('layouts.studio', ['title' => $lesson->title])
 @section('breadcrumb')<a href="{{ route('studio.courses.index') }}" class="hover:text-ink">Courses</a> / <a href="{{ route('studio.curriculum', $course) }}" class="hover:text-ink">{{ $course->title }}</a> / {{ $lesson->title }} @endsection
 @section('content')
-@php $quiz = $lesson->quiz; $noun = $lesson->type === 'exam' ? 'exam' : 'quiz'; @endphp
+@php
+    $quiz = $lesson->quiz; $noun = $lesson->type === 'exam' ? 'exam' : 'quiz';
+    $topicCounts = $quiz ? $quiz->topicCounts() : [];
+    $bankSize = array_sum($topicCounts);
+@endphp
 <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
     <div class="flex items-center gap-2 text-sm text-muted">@include('partials.lesson-icon', ['type' => $lesson->type]) {{ $lesson->typeLabel() }} lesson</div>
     <div class="flex gap-2">
@@ -44,6 +48,14 @@
                     <div><label class="label" for="max_attempts">Attempts allowed</label><input id="max_attempts" name="max_attempts" type="number" min="1" class="input" value="{{ old('max_attempts', $quiz->max_attempts) }}" placeholder="Unlimited"></div>
                     <div><label class="label" for="time_limit_minutes">Time limit (min)</label><input id="time_limit_minutes" name="time_limit_minutes" type="number" min="1" class="input" value="{{ old('time_limit_minutes', $quiz->time_limit_minutes) }}" placeholder="No limit"></div>
                 </div>
+                <div class="max-w-md">
+                    <label class="label" for="questions_per_attempt">Questions per attempt</label>
+                    <input id="questions_per_attempt" name="questions_per_attempt" type="number" min="1" max="1000" class="input" value="{{ old('questions_per_attempt', $quiz->questions_per_attempt) }}" placeholder="All {{ $bankSize }} questions">
+                    <p class="hint">Leave blank to use every question. Set a number to give each student a different random set from the question bank, balanced across topics. Retakes get questions the student hasn't seen yet first.</p>
+                    @if ($quiz->questions_per_attempt && $quiz->questions_per_attempt > $bankSize)
+                        <p class="mt-1 text-sm font-semibold text-brick">The bank has only {{ $bankSize }} questions, so attempts use all of them.</p>
+                    @endif
+                </div>
                 <div class="grid gap-3 sm:grid-cols-2">
                     <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="shuffle_questions" value="1" class="check" @checked($quiz->shuffle_questions)> Shuffle question order</label>
                     <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="shuffle_options" value="1" class="check" @checked($quiz->shuffle_options)> Shuffle answer choices</label>
@@ -72,20 +84,42 @@
     <section class="mt-10 max-w-6xl">
         <div class="flex flex-wrap items-end justify-between gap-3">
             <div>
-                <h2 class="text-xl font-bold">Questions</h2>
-                <p class="text-sm text-muted">{{ $quiz->questions->count() }} questions · {{ $quiz->questions->sum('points') }} points. Drag to reorder.</p>
+                <h2 class="text-xl font-bold">{{ $quiz->questions_per_attempt ? 'Question bank' : 'Questions' }}</h2>
+                <p class="text-sm text-muted">
+                    {{ $bankSize }} questions · {{ $quiz->questions->sum('points') }} points.
+                    @if ($quiz->questions_per_attempt) Each attempt draws {{ $quiz->attemptSize() }} at random. @endif
+                    Drag to reorder.
+                </p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+                @if (count($topicCounts) > 1)
+                    <label class="sr-only" for="topic-filter">Show topic</label>
+                    <select id="topic-filter" data-topic-filter class="input w-auto py-1.5 text-sm">
+                        <option value="*">All topics</option>
+                        @foreach ($topicCounts as $t => $n)<option value="{{ $t }}">{{ $t === '' ? 'No topic' : $t }} ({{ $n }})</option>@endforeach
+                    </select>
+                @endif
+                <a href="#import" class="btn-ghost btn-sm">Import questions</a>
             </div>
         </div>
+        @if ($topicCounts && array_keys($topicCounts) !== [''])
+            <div class="mt-3 flex flex-wrap gap-1.5 text-xs">
+                @foreach ($topicCounts as $t => $n)
+                    <span class="rounded-full border border-line bg-white px-2.5 py-1"><span class="font-semibold">{{ $t === '' ? 'No topic' : $t }}</span> · {{ $n }}@if ($quiz->questions_per_attempt && $bankSize) · ~{{ round($quiz->attemptSize() * $n / $bankSize, 1) }} per attempt @endif</span>
+                @endforeach
+            </div>
+        @endif
+        <datalist id="question-topics">@foreach (array_filter(array_keys($topicCounts), 'strlen') as $t)<option value="{{ $t }}"></option>@endforeach</datalist>
         <ol data-questions data-reorder-url="{{ route('studio.questions.reorder', $lesson) }}" class="mt-4 space-y-3">
             @foreach ($quiz->questions as $i => $question)
-                <li data-question="{{ $question->id }}" id="q{{ $question->id }}" class="panel scroll-mt-20">
+                <li data-question="{{ $question->id }}" data-topic="{{ (string) $question->topic }}" id="q{{ $question->id }}" class="panel scroll-mt-20">
                     <details @if (old('_qid') == $question->id) open @endif>
                         <summary class="flex cursor-pointer list-none items-start gap-3 px-4 py-3.5">
                             <span class="drag-handle mt-0.5 text-muted">@include('studio.partials.grip')</span>
                             <span class="w-6 shrink-0 text-sm font-bold text-muted">{{ $i + 1 }}</span>
                             <span class="min-w-0 flex-1">
                                 <span class="line-clamp-2 font-semibold">{{ $question->prompt }}</span>
-                                <span class="mt-0.5 block text-xs text-muted">{{ \App\Models\Question::TYPES[$question->type] }} · {{ $question->points }} pt · @if ($question->type === 'short'){{ count($question->acceptedAnswers()) }} accepted answers @else correct: {{ $question->options->where('is_correct', true)->pluck('text')->implode(', ') }} @endif</span>
+                                <span class="mt-0.5 block text-xs text-muted">@if ($question->topic)<span class="font-semibold text-ink">{{ $question->topic }}</span> · @endif{{ \App\Models\Question::TYPES[$question->type] }} · {{ $question->points }} pt · @if ($question->type === 'short'){{ count($question->acceptedAnswers()) }} accepted answers @else correct: {{ $question->options->where('is_correct', true)->pluck('text')->implode(', ') }} @endif</span>
                             </span>
                             <span class="text-xs font-semibold text-pine">Edit</span>
                         </summary>
@@ -101,6 +135,59 @@
         <div class="panel mt-5 border-dashed p-5">
             <h3 class="font-bold">Add a question</h3>
             <div class="mt-4">@include('studio.partials.question-form', ['question' => null, 'action' => route('studio.questions.store', $lesson), 'method' => 'POST'])</div>
+        </div>
+
+        <div id="import" class="panel mt-5 scroll-mt-20 p-5">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                    <h3 class="font-bold">Import questions</h3>
+                    <p class="mt-1 max-w-2xl text-sm text-muted">Add many questions at once from Excel, a CSV file, a Word document, or text pasted from Google Docs. You'll see a preview before anything is added, and questions already in this {{ $noun }} are skipped.</p>
+                </div>
+                <a href="{{ route('studio.questions.template', $lesson) }}" class="btn-ghost btn-sm">Download Excel template</a>
+            </div>
+            @error('file')<p class="mt-3 rounded-lg bg-brick-soft px-3 py-2 text-sm font-semibold text-brick">{{ $message }}</p>@enderror
+            @error('text')<p class="mt-3 rounded-lg bg-brick-soft px-3 py-2 text-sm font-semibold text-brick">{{ $message }}</p>@enderror
+            <form method="POST" action="{{ route('studio.questions.import.preview', $lesson) }}" enctype="multipart/form-data" class="mt-4 space-y-4">
+                @csrf
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div><label class="label" for="import-file">File</label>
+                        <input id="import-file" name="file" type="file" accept=".xlsx,.csv,.docx,.txt" class="text-sm">
+                        <p class="hint">.xlsx, .csv, .docx or .txt. Old .xls and .doc files: use Save As in Excel or Word first.</p></div>
+                    <div><label class="label" for="default_topic">Topic for questions without one <span class="font-normal text-muted">(optional)</span></label>
+                        <input id="default_topic" name="default_topic" list="question-topics" maxlength="120" class="input" placeholder="e.g. Module 4"></div>
+                </div>
+                <div><label class="label" for="import-text">…or paste questions</label>
+                    <textarea id="import-text" name="text" rows="6" class="input font-mono text-sm" placeholder="Topic: Module 1&#10;1. Which body accredits travel agencies to sell airline tickets?&#10;A. IATA&#10;B. CLIA&#10;C. ASTA&#10;Answer: A">{{ old('text') }}</textarea></div>
+                <button class="btn-primary btn-sm">Preview import</button>
+            </form>
+            <details class="mt-4 text-sm">
+                <summary class="cursor-pointer font-semibold text-pine">Format guide</summary>
+                <div class="mt-3 grid gap-5 md:grid-cols-2">
+                    <div>
+                        <p class="font-semibold">Excel or CSV: one row per question</p>
+                        <p class="mt-1 text-muted">Columns: <strong>Topic</strong>, <strong>Type</strong>, <strong>Question</strong>, <strong>Option A</strong>–<strong>Option H</strong>, <strong>Correct</strong>, <strong>Points</strong>, <strong>Explanation</strong>. Only Question and Correct are required. The template has one example of each type.</p>
+                        <ul class="mt-2 list-disc space-y-1 pl-5 text-muted">
+                            <li>Correct: the letter (<code>B</code>), several letters (<code>A, C</code>), <code>True</code>/<code>False</code>, or for short answers the accepted answers separated by <code>|</code>.</li>
+                            <li>Type can be left blank: it's worked out from the options and the answer. Types: single, multiple, true_false, short.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p class="font-semibold">Word, Google Docs or pasted text</p>
+<pre class="mt-2 overflow-x-auto rounded-lg bg-mist p-3 text-xs leading-relaxed">Topic: Module 4
+1. Which belong in a discovery call?
+A. Budget
+B. Travel dates
+C. Your commission rate
+Answer: A, B
+Explanation: Keep the call about the client.
+
+2. IATA stands for International Air
+Transport Association.
+Answer: True</pre>
+                        <p class="mt-2 text-muted">Word's automatic numbering and lettering work too. A choice ending with <code>*</code> also marks it correct. "Module 4: ..." on its own line sets the topic for the questions below it.</p>
+                    </div>
+                </div>
+            </details>
         </div>
     </section>
 @endif

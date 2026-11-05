@@ -53,6 +53,8 @@ Before changing anything, read and respect these.
   - Short answers ignore capital letters and extra spaces.
   - The score is a percentage of points, and a student passes when the score is at least the pass mark.
 - **One final exam per course.**
+- **Question banks:** when a quiz sets "questions per attempt", each attempt draws that many questions at random. Every topic gets a share in proportion to its size (largest remainder), and questions the student saw in earlier attempts are used only once unseen ones run out. Scores count only the drawn questions. Topics are normalised, so "4" and "Module 4: Client discovery" both become "Module 4".
+- **Question import** (`app/Services/QuestionImporter.php`): .xlsx, .csv, .docx, .txt or pasted text. Instructors always see a preview first, and questions already in the quiz are skipped.
 - **Payments:** a student is enrolled only after the payment provider confirms payment. `Checkout::fulfil()` is the single place that marks an order paid, counts coupon use and enrolls the student.
 
 **Permissions:**
@@ -153,7 +155,8 @@ These are the goals that justify building our own platform. They are not all bui
 - ✅ Timer in the browser, autosaved answers, automatic submission at zero, question jump bar, review page
 - ✅ Per-question results report for instructors
 - 🔁 Server-side enforcement of the time limit
-- ⬜ Question banks with random draws
+- ✅ Question banks with random draws per attempt, balanced by topic, with unseen questions first on retakes
+- ✅ Bulk import from Excel, CSV, Word or pasted text, with a preview and a downloadable template
 - ⬜ Manual grading and instructor overrides (for example, granting an extra attempt)
 
 ### Checkout and sales
