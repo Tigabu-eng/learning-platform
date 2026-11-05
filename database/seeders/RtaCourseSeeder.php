@@ -32,7 +32,7 @@ class RtaCourseSeeder extends Seeder
         $email = env('RTA_INSTRUCTOR_EMAIL');
         $instructor = $email
             ? User::where('email', $email)->first()
-            : User::where('role', 'admin')->orderBy('id')->first();
+            : User::whereIn('role', ['super_admin', 'admin'])->orderBy('id')->first();
         if (! $instructor) {
             throw new RuntimeException($email ? "No user with the email $email." : 'Create an admin account first, or set RTA_INSTRUCTOR_EMAIL.');
         }

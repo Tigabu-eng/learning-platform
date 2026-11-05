@@ -205,3 +205,18 @@ document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
     document.querySelectorAll('details[data-menu][open]').forEach((d) => { d.open = false; d.querySelector('summary')?.focus(); });
 });
+
+// Admin users page: confirm before giving or taking away admin access; undo the choice on cancel.
+document.querySelectorAll('form[data-confirm-role]').forEach((form) => {
+    const select = form.querySelector('select[name=role]');
+    const original = select.value;
+    const powerful = (r) => r === 'admin' || r === 'super_admin';
+    form.addEventListener('submit', (e) => {
+        if (!powerful(select.value) && !powerful(original)) return;
+        const label = select.options[select.selectedIndex].text;
+        if (!confirm(`Make ${form.dataset.confirmRole} ${/^[aeiou]/i.test(label) ? 'an' : 'a'} ${label}?`)) {
+            e.preventDefault();
+            select.value = original;
+        }
+    });
+});

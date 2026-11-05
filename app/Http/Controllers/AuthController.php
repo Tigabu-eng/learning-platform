@@ -46,7 +46,7 @@ class AuthController extends Controller
     private function home(User $user): string
     {
         return match ($user->role) {
-            'admin' => route('admin.dashboard'),
+            'admin', 'super_admin' => route('admin.dashboard'),
             'instructor' => route('studio.dashboard'),
             default => route('dashboard'),
         };

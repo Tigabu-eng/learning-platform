@@ -9,6 +9,7 @@ use App\Models\Enrollment;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
 {
@@ -46,12 +47,20 @@ class AdminController extends Controller
 
     public function updateUser(Request $request, User $user)
     {
-        $data = $request->validate(['role' => 'required|in:admin,instructor,student']);
-        if ($user->id === $request->user()->id && $data['role'] !== 'admin') {
-            return back()->withErrors(['role' => 'You can’t remove your own admin access.']);
+        $me = $request->user();
+        $data = $request->validate(['role' => ['required', Rule::in(array_keys(User::ROLES))]]);
+        if ($data['role'] === $user->role) return back();
+
+        if ($user->is($me)) {
+            return back()->withErrors(['role' => 'You can’t change your own role. Ask another super admin.']);
         }
+        if (! in_array($data['role'], $me->assignableRolesFor($user), true)) {
+            return back()->withErrors(['role' => 'Only a super admin can make or remove admins.']);
+        }
+
         $user->update($data);
-        return back()->with('status', $user->name.' is now '.($data['role'] === 'admin' ? 'an admin' : 'a'.($data['role'] === 'instructor' ? 'n instructor' : ' student')).'.');
+        $label = strtolower($user->roleLabel());
+        return back()->with('status', $user->name.' is now '.(in_array($label[0], ['a', 'i'], true) ? 'an ' : 'a ').$label.'.');
     }
 
     public function courses()

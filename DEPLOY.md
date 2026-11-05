@@ -117,6 +117,13 @@ php artisan tinker
 >>> App\Models\User::create(['name' => 'Your Name', 'email' => 'you@tarctpc.com', 'password' => 'a-strong-password', 'role' => 'admin']);
 ```
 
+To make an existing account a **super admin** (the role that can add or remove admins), for example the first one or to recover access:
+
+```bash
+cd ~/learn.tarctpc.com/current
+php artisan user:super-admin you@example.com
+```
+
 Production is **not** seeded with the demo accounts. Never run plain `db:seed` there.
 
 To load the RTA Certification Program outline (13 modules, sample quizzes and final exam) as a **draft**, run this once. It does nothing if the course already exists, and it uses the first admin as instructor unless `RTA_INSTRUCTOR_EMAIL` is set:
