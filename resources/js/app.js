@@ -185,3 +185,12 @@ document.addEventListener('DOMContentLoaded', () => {
     initQuiz();
     initConfirm();
 });
+
+// Studio: show one topic at a time in a long question bank.
+document.querySelectorAll('[data-topic-filter]').forEach((select) => {
+    select.addEventListener('change', () => {
+        document.querySelectorAll('[data-questions] > [data-question]').forEach((li) => {
+            li.hidden = select.value !== '*' && li.dataset.topic !== select.value;
+        });
+    });
+});

@@ -95,6 +95,7 @@ class CurriculumController extends Controller
             'passing_score' => 'nullable|integer|min:0|max:100',
             'max_attempts' => 'nullable|integer|min:1|max:100',
             'time_limit_minutes' => 'nullable|integer|min:1|max:600',
+            'questions_per_attempt' => 'nullable|integer|min:1|max:1000',
         ]);
         $data['is_preview'] = $request->boolean('is_preview');
 
@@ -112,7 +113,7 @@ class CurriculumController extends Controller
             $data['file_name'] = $request->file('attachment')->getClientOriginalName();
         }
 
-        $quizFields = ['passing_score', 'max_attempts', 'time_limit_minutes'];
+        $quizFields = ['passing_score', 'max_attempts', 'time_limit_minutes', 'questions_per_attempt'];
         $quizData = array_intersect_key($data, array_flip($quizFields));
         $lessonData = array_diff_key($data, array_flip(array_merge($quizFields, ['video', 'attachment'])));
         if ($lessonData['chapter_id'] != $lesson->chapter_id) {

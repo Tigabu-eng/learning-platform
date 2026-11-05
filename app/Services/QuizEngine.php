@@ -29,17 +29,59 @@ class QuizEngine
         if ($open && (! $open->expires_at || $open->expires_at->isFuture())) return $open;
         if ($open) $this->submit($open, $open->answers ?? []); // expired, close it out
 
-        $ids = $quiz->questions()->pluck('id')->all();
-        if ($quiz->shuffle_questions) shuffle($ids);
-
         return QuizAttempt::create([
             'quiz_id' => $quiz->id,
             'enrollment_id' => $enrollment->id,
             'user_id' => $enrollment->user_id,
-            'question_order' => $ids,
+            'question_order' => $this->drawQuestions($quiz, $enrollment),
             'started_at' => now(),
             'expires_at' => $quiz->time_limit_minutes ? now()->addMinutes($quiz->time_limit_minutes) : null,
         ]);
+    }
+
+    /**
+     * Picks the question ids for a new attempt. With a draw size smaller than the bank,
+     * each topic gets a share proportional to its size (largest remainder), and questions
+     * this student saw in earlier attempts are only used once the unseen ones run out.
+     */
+    public function drawQuestions(Quiz $quiz, Enrollment $enrollment): array
+    {
+        $bank = $quiz->questions()->get(['id', 'topic', 'position']);
+        $size = $quiz->attemptSize();
+
+        if ($size >= $bank->count()) {
+            $ids = $bank->pluck('id')->all();
+            if ($quiz->shuffle_questions) shuffle($ids);
+            return $ids;
+        }
+
+        $seen = $quiz->attempts()->where('enrollment_id', $enrollment->id)->pluck('question_order')
+            ->flatten()->flip()->all();
+        $groups = $bank->groupBy(fn ($q) => (string) $q->topic);
+
+        $quotas = []; $remainders = [];
+        foreach ($groups as $topic => $questions) {
+            $exact = $size * $questions->count() / $bank->count();
+            $quotas[$topic] = (int) floor($exact);
+            $remainders[$topic] = $exact - floor($exact);
+        }
+        $topics = array_keys($remainders);
+        shuffle($topics); // random tie-break, then largest remainder first (usort is stable)
+        usort($topics, fn ($a, $b) => $remainders[$b] <=> $remainders[$a]);
+        foreach (array_slice($topics, 0, $size - array_sum($quotas)) as $topic) $quotas[$topic]++;
+
+        $picked = [];
+        foreach ($groups as $topic => $questions) {
+            $ids = $questions->pluck('id')->shuffle()->sortBy(fn ($id) => isset($seen[$id]) ? 1 : 0);
+            array_push($picked, ...$ids->take($quotas[$topic])->all());
+        }
+
+        if ($quiz->shuffle_questions) {
+            shuffle($picked);
+            return $picked;
+        }
+        $keep = array_flip($picked);
+        return $bank->pluck('id')->filter(fn ($id) => isset($keep[$id]))->values()->all();
     }
 
     public function submit(QuizAttempt $attempt, array $answers): QuizAttempt

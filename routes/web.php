@@ -12,6 +12,7 @@ use App\Http\Controllers\Studio\CouponController;
 use App\Http\Controllers\Studio\CourseController;
 use App\Http\Controllers\Studio\CurriculumController;
 use App\Http\Controllers\Studio\QuestionController;
+use App\Http\Controllers\Studio\QuestionImportController;
 use App\Http\Controllers\Studio\ReportController;
 use App\Http\Controllers\Studio\StudioController;
 use Illuminate\Support\Facades\Route;
@@ -81,6 +82,9 @@ Route::middleware(['auth', 'role:admin,instructor'])->prefix('studio')->name('st
     Route::put('/questions/{question}', [QuestionController::class, 'update'])->name('questions.update');
     Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
     Route::post('/lessons/{lesson}/questions/reorder', [QuestionController::class, 'reorder'])->name('questions.reorder');
+    Route::post('/lessons/{lesson}/questions/import', [QuestionImportController::class, 'preview'])->name('questions.import.preview');
+    Route::post('/lessons/{lesson}/questions/import/confirm', [QuestionImportController::class, 'store'])->name('questions.import.store');
+    Route::get('/lessons/{lesson}/questions/template', [QuestionImportController::class, 'template'])->name('questions.template');
 
     Route::get('/courses/{course}/students', [ReportController::class, 'students'])->name('students');
     Route::post('/courses/{course}/students', [ReportController::class, 'enrollStudent'])->name('students.enroll');

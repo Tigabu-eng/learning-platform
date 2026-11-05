@@ -13,6 +13,9 @@
             <select id="type-{{ $uid }}" name="type" class="input">@foreach (\App\Models\Question::TYPES as $k => $v)<option value="{{ $k }}" @selected($type === $k)>{{ $v }}</option>@endforeach</select></div>
         <div><label class="label" for="points-{{ $uid }}">Points</label><input id="points-{{ $uid }}" name="points" type="number" min="1" max="100" value="{{ $question?->points ?? 1 }}" class="input"></div>
     </div>
+    <div><label class="label" for="topic-{{ $uid }}">Topic or module <span class="font-normal text-muted">(optional)</span></label>
+        <input id="topic-{{ $uid }}" name="topic" list="question-topics" maxlength="120" value="{{ old('_qid') == $uid ? old('topic') : $question?->topic }}" class="input" placeholder="e.g. Module 4">
+        <p class="hint">When each attempt draws from the bank, every topic gets a fair share of the questions.</p></div>
     <div><label class="label" for="prompt-{{ $uid }}">Question</label><textarea id="prompt-{{ $uid }}" name="prompt" rows="2" class="input" required>{{ old('_qid') == $uid ? old('prompt') : $question?->prompt }}</textarea></div>
 
     <div data-show-for="single multiple">

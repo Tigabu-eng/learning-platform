@@ -63,7 +63,7 @@ class LearnController extends Controller
             $open = $enrollment ? $quiz->attempts()->where('enrollment_id', $enrollment->id)->whereNull('submitted_at')->latest()->first() : null;
             $quizInfo = [
                 'quiz' => $quiz,
-                'questions' => $quiz->questions()->count(),
+                'questions' => $quiz->attemptSize(),
                 'points' => $quiz->totalPoints(),
                 'attempts' => $attempts,
                 'open' => $open && (! $open->expires_at || $open->expires_at->isFuture()) ? $open : null,
