@@ -16,7 +16,7 @@ use Illuminate\Support\Str;
 
 /**
  * Demo school for Travel Advisor Resource Center. All accounts use the password "password".
- *   admin@tarc.test      — admin
+ *   admin@tarc.test      — super admin
  *   steven@tarc.test     — instructor: Steven Gould, TARC founder, teaches the RTA Certification Program
  *   maya@tarc.test       — instructor: fictional, teaches TA Launchpad and the free course
  *   daniel@tarc.test     — student, halfway through the RTA Certification Program
@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $pw = 'password';
-        User::create(['name' => 'TARC Admin', 'email' => 'admin@tarc.test', 'password' => $pw, 'role' => 'admin']);
+        User::create(['name' => 'TARC Admin', 'email' => 'admin@tarc.test', 'password' => $pw, 'role' => 'super_admin']);
         $steven = User::create(['name' => 'Steven Gould', 'email' => 'steven@tarc.test', 'password' => $pw, 'role' => 'instructor',
             'bio' => 'Founder and Chief Innovation Officer of Travel Advisor Resource Center (TARC), and instructor of the Recognized Travel Advisor (RTA) Certification Program.']);
         $maya = User::create(['name' => 'Maya Thompson', 'email' => 'maya@tarc.test', 'password' => $pw, 'role' => 'instructor',

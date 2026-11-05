@@ -26,7 +26,8 @@ It is a self-hosted Laravel 13 application (PHP 8.3+, Blade, Tailwind 4, SQLite 
 |---|---|
 | Student | Browses and buys courses, learns lesson by lesson, takes quizzes and the final exam, keeps certificates |
 | Instructor | Builds courses in the Studio, sets pricing and coupons, follows students and quiz results |
-| Admin | Sees the whole school, manages users and roles, all courses and all orders |
+| Admin | Sees the whole school: all courses, students, exam codes and orders. Can switch people between Student and Instructor |
+| Super admin | Everything an admin can do, plus making and removing admins and super admins. Nobody can change their own role, so there is always one left. `php artisan user:super-admin {email}` sets one from the server |
 
 ## 2. Inspiration
 

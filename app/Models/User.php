@@ -24,9 +24,28 @@ class User extends Authenticatable
         ];
     }
 
-    public function isAdmin(): bool { return $this->role === 'admin'; }
+    public const ROLES = [
+        'student' => 'Student',
+        'instructor' => 'Instructor',
+        'admin' => 'Admin',
+        'super_admin' => 'Super admin',
+    ];
+
+    /** Super admins are admins too: every admin check includes them. */
+    public function isAdmin(): bool { return in_array($this->role, ['admin', 'super_admin'], true); }
+    /** Only super admins can make or remove admins and super admins. */
+    public function isSuperAdmin(): bool { return $this->role === 'super_admin'; }
     public function isInstructor(): bool { return $this->role === 'instructor'; }
-    public function canTeach(): bool { return in_array($this->role, ['admin', 'instructor'], true); }
+    public function canTeach(): bool { return $this->isAdmin() || $this->isInstructor(); }
+    public function roleLabel(): string { return self::ROLES[$this->role] ?? ucfirst((string) $this->role); }
+
+    /** Roles this person may give to $target (empty: they can't change $target's role at all). */
+    public function assignableRolesFor(User $target): array
+    {
+        if ($this->isSuperAdmin()) return array_keys(self::ROLES);
+        if ($this->isAdmin() && ! $target->isAdmin()) return ['student', 'instructor'];
+        return [];
+    }
 
     public function courses() { return $this->hasMany(Course::class, 'instructor_id'); }
     public function enrollments() { return $this->hasMany(Enrollment::class); }
