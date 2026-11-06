@@ -2,13 +2,13 @@
 @section('content')
 @php $q = trim((string) request('q')); @endphp
 
-{{-- Intro: headline, text and search across the page width --}}
-<section class="max-w-4xl">
+{{-- Intro: headline, text and search, centred --}}
+<section class="mx-auto max-w-4xl pt-4 text-center sm:pt-8">
     <p class="text-sm font-semibold text-pine">TARC learning</p>
     <h1 class="mt-2 text-4xl font-extrabold leading-[1.05] sm:text-5xl lg:text-6xl">Your travel business deserves structure, growth and support.</h1>
-    <p class="mt-5 max-w-3xl text-lg text-muted sm:text-xl">Self-paced courses for travel professionals at every stage, from setting up your agency to earning your Recognized Travel Advisor certification.</p>
+    <p class="mx-auto mt-5 max-w-3xl text-lg text-muted sm:text-xl">Self-paced courses for travel professionals at every stage, from setting up your agency to earning your Recognized Travel Advisor certification.</p>
 
-    <form action="{{ route('home') }}#courses" role="search" class="mt-8 flex max-w-3xl gap-2">
+    <form action="{{ route('home') }}#courses" role="search" class="mx-auto mt-8 flex max-w-3xl gap-2 text-left">
         <label class="sr-only" for="q">Search courses</label>
         <div class="relative min-w-0 flex-1">
             <svg viewBox="0 0 20 20" class="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="9" r="5.5"/><path d="m13.2 13.2 3.3 3.3"/></svg>
