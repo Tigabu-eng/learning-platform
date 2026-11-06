@@ -1,4 +1,4 @@
-<a href="{{ route('courses.show', $course) }}" class="group flex flex-col overflow-hidden rounded-xl border border-line bg-white hover:border-pine/50">
+<a href="{{ route('courses.show', $course) }}" class="group flex flex-col overflow-hidden rounded-xl border border-line bg-white transition hover:-translate-y-0.5 hover:border-pine/40 hover:shadow-lg hover:shadow-pine-dark/5">
     <div class="aspect-[16/9] overflow-hidden bg-pine">
         @if ($course->thumbnailUrl())
             <img src="{{ $course->thumbnailUrl() }}" alt="" class="size-full object-cover">
