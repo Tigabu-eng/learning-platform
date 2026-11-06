@@ -143,25 +143,30 @@ ln -sfn releases/<previous release> current
 
 A rollback doesn't undo database migrations. If a release changed the database, restore a backup instead.
 
-## Turning on email
+## Email
 
-Proctor emails, decisions sent to students and new-request alerts are only written to the log until a mailbox is set up (`MAIL_MAILER=log`).
+The site sends from `noreply@learn.tarctpc.com`, a cPanel mailbox on this server, over SMTP. Replies go to `admin@thetarc.com` (`MAIL_REPLY_TO_ADDRESS`).
 
-1. In cPanel → **Email Accounts**, create `noreply@tarctpc.com` with a strong password.
-2. In `~/learn.tarctpc.com/shared/.env`, set:
-   ```
-   MAIL_MAILER=smtp
-   MAIL_SCHEME=smtps
-   MAIL_HOST=mail.tarctpc.com
-   MAIL_PORT=465
-   MAIL_USERNAME=noreply@tarctpc.com
-   MAIL_PASSWORD=the-mailbox-password
-   MAIL_FROM_ADDRESS="noreply@tarctpc.com"
-   ```
-3. Run `php artisan config:cache` in `~/learn.tarctpc.com/current`.
-4. Test with an exam code generated for yourself, with "Email the code" ticked.
+Settings in `~/learn.tarctpc.com/shared/.env`:
+```
+MAIL_MAILER=smtp
+MAIL_SCHEME=smtps
+MAIL_HOST=premium111.web-hosting.com
+MAIL_PORT=465
+MAIL_USERNAME=noreply@learn.tarctpc.com
+MAIL_PASSWORD=(the mailbox password; reset it in cPanel -> Email Accounts if lost)
+MAIL_FROM_ADDRESS="noreply@learn.tarctpc.com"
+MAIL_REPLY_TO_ADDRESS=admin@thetarc.com
+```
+After changing them, run `php artisan config:cache` in `~/learn.tarctpc.com/current`. To stop sending, set `MAIL_MAILER=log`.
 
-Replies go to `TARC_SUPPORT_EMAIL` (admin@thetarc.com), not to the noreply mailbox.
+The domain's DNS is at GoDaddy, so these records are added there, not in cPanel. Without them, Gmail and Outlook reject or spam the mail. Get the current DKIM value from cPanel -> **Email Deliverability** -> learn.tarctpc.com.
+
+| Type | Name | Value |
+|---|---|---|
+| TXT | `learn` | `v=spf1 ip4:162.0.229.3 include:spf.web-hosting.com ~all` |
+| TXT | `default._domainkey.learn` | `v=DKIM1; k=rsa; p=...` (from cPanel) |
+| TXT | `_dmarc.learn` | `v=DMARC1; p=none; rua=mailto:admin@thetarc.com` |
 
 ## Troubleshooting
 
