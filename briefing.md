@@ -181,7 +181,6 @@ These are the goals that justify building our own platform. They are not all bui
 - ✅ Registration, login, roles; admins change roles
 - ✅ Manual enrollment by instructors
 - 🔁 Manually enrolled new users can't sign in yet
-- ⬜ Password reset
 - ✅ Emails: welcome on sign-up, payment receipt, "you're enrolled" from the Studio (new accounts get a 7-day set-password link), "Forgot password?" reset (60-minute link)
 - ⬜ Emails: certificate issued, new drip lesson, reminders for inactive students
 - ⬜ Student profile page listing everything they've earned
