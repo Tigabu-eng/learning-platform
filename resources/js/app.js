@@ -220,3 +220,12 @@ document.querySelectorAll('form[data-confirm-role]').forEach((form) => {
         }
     });
 });
+
+// Proctor request: preselect the student's own time zone when it's in the list.
+document.querySelectorAll('select[data-guess-timezone]').forEach((select) => {
+    if (select.closest('form')?.querySelector('.text-brick')) return; // keep the choice after a validation error
+    try {
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        if ([...select.options].some((o) => o.value === tz)) select.value = tz;
+    } catch (e) { /* older browsers: keep the default */ }
+});

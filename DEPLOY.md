@@ -143,6 +143,26 @@ ln -sfn releases/<previous release> current
 
 A rollback doesn't undo database migrations. If a release changed the database, restore a backup instead.
 
+## Turning on email
+
+Proctor emails, decisions sent to students and new-request alerts are only written to the log until a mailbox is set up (`MAIL_MAILER=log`).
+
+1. In cPanel → **Email Accounts**, create `noreply@tarctpc.com` with a strong password.
+2. In `~/learn.tarctpc.com/shared/.env`, set:
+   ```
+   MAIL_MAILER=smtp
+   MAIL_SCHEME=smtps
+   MAIL_HOST=mail.tarctpc.com
+   MAIL_PORT=465
+   MAIL_USERNAME=noreply@tarctpc.com
+   MAIL_PASSWORD=the-mailbox-password
+   MAIL_FROM_ADDRESS="noreply@tarctpc.com"
+   ```
+3. Run `php artisan config:cache` in `~/learn.tarctpc.com/current`.
+4. Test with an exam code generated for yourself, with "Email the code" ticked.
+
+Replies go to `TARC_SUPPORT_EMAIL` (admin@thetarc.com), not to the noreply mailbox.
+
 ## Troubleshooting
 
 | Symptom | Fix |

@@ -9,9 +9,14 @@
             $nav = [
                 ['studio.dashboard', 'Overview', 'studio.dashboard'],
                 ['studio.courses.index', 'Courses', 'studio.courses.*|studio.curriculum|studio.lessons.*|studio.students*|studio.reports.*'],
+                ['studio.proctoring', 'Proctoring', 'studio.proctoring'],
                 ['studio.coupons.index', 'Coupons', 'studio.coupons.*'],
                 ['studio.sales', 'Sales', 'studio.sales'],
             ];
+            $me = auth()->user();
+            $pendingProctor = \App\Models\ProctorRequest::where('status', 'pending')
+                ->when(! $me->isAdmin(), fn ($q) => $q->whereHas('quiz.lesson.course', fn ($c) => $c->where('instructor_id', $me->id)))
+                ->count();
             if (auth()->user()->isAdmin()) {
                 $nav[] = ['admin.dashboard', 'Admin overview', 'admin.dashboard'];
                 $nav[] = ['admin.users', 'Users', 'admin.users'];
@@ -26,7 +31,7 @@
                     'whitespace-nowrap rounded-lg px-3 py-2',
                     'bg-pine-soft text-pine-dark' => request()->routeIs(...explode('|', $active)),
                     'text-muted hover:bg-mist hover:text-ink' => ! request()->routeIs(...explode('|', $active)),
-                ])>{{ $label }}</a>
+                ])>{{ $label }}@if ($route === 'studio.proctoring' && $pendingProctor)<span class="ml-1.5 rounded-full bg-saffron px-1.5 py-0.5 text-xs font-bold text-ink" aria-label="{{ $pendingProctor }} waiting">{{ $pendingProctor }}</span>@endif</a>
             @endforeach
             <a href="{{ route('home') }}" class="whitespace-nowrap rounded-lg px-3 py-2 text-muted hover:bg-mist hover:text-ink lg:mt-4">View school</a>
         </nav>

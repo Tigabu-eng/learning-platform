@@ -6,12 +6,15 @@ use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\LearnController;
+use App\Http\Controllers\ProctorPortalController;
+use App\Http\Controllers\ProctorRequestController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\Studio\CouponController;
 use App\Http\Controllers\Studio\CourseController;
 use App\Http\Controllers\Studio\CurriculumController;
 use App\Http\Controllers\Studio\ExamAccessController;
+use App\Http\Controllers\Studio\ProctoringController;
 use App\Http\Controllers\Studio\QuestionController;
 use App\Http\Controllers\Studio\QuestionImportController;
 use App\Http\Controllers\Studio\ReportController;
@@ -22,6 +25,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [CatalogController::class, 'index'])->name('home');
 Route::get('/courses/{course}', [CatalogController::class, 'show'])->name('courses.show');
 Route::get('/verify', [CertificateController::class, 'verify'])->name('certificates.verify');
+
+// Proctor's private page (link from their email; no account)
+Route::middleware('throttle:30,1')->group(function () {
+    Route::get('/proctor/{token}', [ProctorPortalController::class, 'show'])->name('proctor.show');
+    Route::post('/proctor/{token}', [ProctorPortalController::class, 'confirm'])->name('proctor.confirm');
+});
 Route::get('/certificates/{certificate}', [CertificateController::class, 'show'])->name('certificates.show');
 Route::match(['get', 'post'], '/webhooks/{gateway}', [CheckoutController::class, 'webhook'])->name('checkout.webhook');
 
@@ -51,6 +60,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/learn/{course}/lessons/{lesson}/download', [LearnController::class, 'download'])->name('learn.download');
 
     Route::post('/learn/{course}/lessons/{lesson}/attempts', [QuizController::class, 'start'])->name('quiz.start');
+    Route::get('/learn/{course}/lessons/{lesson}/proctor', [ProctorRequestController::class, 'create'])->name('proctor-requests.create');
+    Route::post('/learn/{course}/lessons/{lesson}/proctor', [ProctorRequestController::class, 'store'])->middleware('throttle:10,1')->name('proctor-requests.store');
+    Route::post('/learn/{course}/lessons/{lesson}/proctor/{proctorRequest}/cancel', [ProctorRequestController::class, 'cancel'])->name('proctor-requests.cancel');
     Route::get('/attempts/{attempt}', [QuizController::class, 'show'])->name('attempts.show');
     Route::post('/attempts/{attempt}', [QuizController::class, 'submit'])->name('attempts.submit');
     Route::post('/attempts/{attempt}/autosave', [QuizController::class, 'autosave'])->name('attempts.autosave');
@@ -92,6 +104,10 @@ Route::middleware(['auth', 'role:admin,instructor'])->prefix('studio')->name('st
     Route::get('/courses/{course}/students/{enrollment}', [ReportController::class, 'student'])->name('students.show');
     Route::post('/courses/{course}/students/{enrollment}/exam-codes', [ExamAccessController::class, 'store'])->name('exam-codes.store');
     Route::post('/exam-codes/{code}/revoke', [ExamAccessController::class, 'revoke'])->name('exam-codes.revoke');
+    Route::get('/proctoring', [ProctoringController::class, 'index'])->name('proctoring');
+    Route::post('/proctoring/{proctorRequest}/approve', [ProctoringController::class, 'approve'])->name('proctoring.approve');
+    Route::post('/proctoring/{proctorRequest}/decline', [ProctoringController::class, 'decline'])->name('proctoring.decline');
+    Route::post('/proctoring/{proctorRequest}/resend', [ProctoringController::class, 'resend'])->name('proctoring.resend');
     Route::get('/courses/{course}/quiz-reports', [ReportController::class, 'quizzes'])->name('reports.quizzes');
 
     Route::get('/coupons', [CouponController::class, 'index'])->name('coupons.index');

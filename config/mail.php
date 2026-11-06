@@ -115,4 +115,10 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    // Emails use TARC's colours: resources/views/vendor/mail/html/themes/tarc.css
+    'markdown' => [
+        'theme' => env('MAIL_MARKDOWN_THEME', 'tarc'),
+        'paths' => [resource_path('views/vendor/mail')],
+    ],
+
 ];

@@ -34,6 +34,21 @@
                                    placeholder="{{ $quiz->access_mode === 'code' ? 'XXXX-XXXX' : '' }}">
                             @error('access_code')<p class="mt-2 text-sm font-semibold text-brick">{{ $message }}</p>@enderror
                             <p class="hint">Your proctor enters this when you’re ready to begin. Questions about proctoring? Email {{ config('school.brand.support_email') }}.</p>
+                            @if ($quiz->access_mode === 'code')
+                                @php $proctorReq = \App\Models\ProctorRequest::where('quiz_id', $quiz->id)->whereHas('enrollment', fn ($e) => $e->where('user_id', auth()->id())->where('course_id', $lesson->course_id))->latest('id')->first(); @endphp
+                                <p class="mt-3 border-t border-line pt-3 text-sm">
+                                    @if ($proctorReq?->isPending())
+                                        Your proctor request is <span class="font-semibold">waiting for review</span>.
+                                    @elseif ($proctorReq?->status === 'approved' && $proctorReq->code?->isActive())
+                                        Approved: <span class="font-semibold">{{ $proctorReq->proctor_name }}</span> has your code.
+                                    @elseif ($proctorReq?->status === 'declined')
+                                        Your last proctor request was declined.
+                                    @else
+                                        Don’t have a proctor yet?
+                                    @endif
+                                    <a href="{{ route('proctor-requests.create', [$lesson->course, $lesson]) }}" class="-my-2 inline-block py-2 font-semibold text-pine">{{ $proctorReq ? 'View or update your request' : 'Request a proctored exam' }} →</a>
+                                </p>
+                            @endif
                         </div>
                     @endif
                     <button class="{{ $quiz->is_final ? 'btn-accent' : 'btn-primary' }}">{{ $used ? 'Try again' : 'Start '.$label }}</button>
