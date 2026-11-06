@@ -14,7 +14,10 @@ This is already done. The rest of this guide explains how, in case it needs redo
 | Document root | `learn.tarctpc.com/current/public` |
 | PHP | 8.3, set account-wide in cPanel → *Select PHP Version*. On this host, extensions only load for the account-wide version, and the WordPress site on `tpd.tarctpc.com` shares it |
 | Database | MariaDB 11.4, database and user `tarcaatk_learn` (the password is only in `shared/.env`) |
-| Settings | `/home/tarcaatk/learn.tarctpc.com/shared/.env`. Mail is logged and payments are in test mode until a mailbox and Stripe are set up |
+| Settings | `/home/tarcaatk/learn.tarctpc.com/shared/.env`. Email is live (see [Email](#email)). Payments are in test mode (`PAYMENT_GATEWAY=test`) until Stripe is set up |
+| Email | `noreply@learn.tarctpc.com` (cPanel mailbox) over SMTP; replies go to `admin@thetarc.com`. SPF, DKIM and DMARC are set in GoDaddy DNS |
+| DNS | At GoDaddy (`ns01/ns02.domaincontrol.com`), not cPanel. `learn.tarctpc.com` points to `162.0.229.4` |
+| Admins | Set in the site under Admin → Users. On the server, `php artisan user:super-admin {email}` makes an existing account super admin |
 | GitHub | `production` environment on github.com/Tigabu-eng/learning-platform |
 
 ## How it works
