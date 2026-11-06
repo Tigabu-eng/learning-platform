@@ -115,6 +115,12 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    // Replies to any email go to TARC's inbox, not the no-reply sender.
+    'reply_to' => [
+        'address' => env('MAIL_REPLY_TO_ADDRESS'),
+        'name' => env('MAIL_REPLY_TO_NAME', env('MAIL_FROM_NAME', env('APP_NAME'))),
+    ],
+
     // Emails use TARC's colours: resources/views/vendor/mail/html/themes/tarc.css
     'markdown' => [
         'theme' => env('MAIL_MARKDOWN_THEME', 'tarc'),
