@@ -2,11 +2,13 @@
 
 namespace App\Services;
 
+use App\Mail\OrderReceipt;
 use App\Models\Coupon;
 use App\Models\Course;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use App\Support\SafeMail;
 use Illuminate\Support\Str;
 
 class Checkout
@@ -47,12 +49,20 @@ class Checkout
     /** Marks an order paid exactly once and enrolls the student. */
     public function fulfil(Order $order): void
     {
-        DB::transaction(function () use ($order) {
+        $justPaid = false;
+        DB::transaction(function () use ($order, &$justPaid) {
             $order = Order::lockForUpdate()->find($order->id);
             if ($order->isPaid()) return;
+            $justPaid = true;
             $order->update(['status' => 'paid', 'paid_at' => now()]);
             if ($order->coupon_id) Coupon::whereKey($order->coupon_id)->increment('uses');
             $this->progress->enroll($order->user, $order->course, $order->id);
         });
+
+        // Once only: a webhook and the return page can both report the same payment.
+        if ($justPaid) {
+            $order = $order->fresh(['user', 'course', 'coupon']);
+            SafeMail::send($order->user->email, new OrderReceipt($order));
+        }
     }
 }

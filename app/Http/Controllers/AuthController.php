@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\Welcome;
 use App\Models\User;
+use App\Support\SafeMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Password;
@@ -30,6 +32,7 @@ class AuthController extends Controller
             'password' => ['required', 'confirmed', Password::min(8)],
         ]);
         $user = User::create($data + ['role' => 'student']);
+        SafeMail::send($user->email, new Welcome($user));
         Auth::login($user);
         $request->session()->regenerate();
         return redirect()->intended(route('dashboard'));
