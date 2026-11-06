@@ -229,3 +229,36 @@ document.querySelectorAll('select[data-guess-timezone]').forEach((select) => {
         if ([...select.options].some((o) => o.value === tz)) select.value = tz;
     } catch (e) { /* older browsers: keep the default */ }
 });
+
+// Show / hide password: an eye button inside every password box.
+const EYE = '<svg viewBox="0 0 20 20" class="size-5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.8 10S4.8 4.5 10 4.5 18.2 10 18.2 10 15.2 15.5 10 15.5 1.8 10 1.8 10z"/><circle cx="10" cy="10" r="2.6"/></svg>';
+const EYE_OFF = '<svg viewBox="0 0 20 20" class="size-5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.2 4.7A8.6 8.6 0 0 1 10 4.5c5.2 0 8.2 5.5 8.2 5.5a14 14 0 0 1-2.3 3M5.4 6A13.6 13.6 0 0 0 1.8 10s3 5.5 8.2 5.5a8 8 0 0 0 3.9-1"/><path d="M8.2 8.2a2.6 2.6 0 0 0 3.6 3.6M2.5 2.5l15 15"/></svg>';
+document.querySelectorAll('input[type="password"]:not([data-no-reveal])').forEach((input) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'relative';
+    input.parentNode.insertBefore(wrap, input);
+    wrap.appendChild(input);
+    input.classList.add('pr-11');
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'absolute inset-y-0 right-0 grid w-11 place-items-center rounded-r-lg text-muted hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-pine/30';
+    const sync = () => {
+        const shown = input.type === 'text';
+        btn.innerHTML = shown ? EYE_OFF : EYE;
+        btn.setAttribute('aria-label', shown ? 'Hide password' : 'Show password');
+        btn.setAttribute('aria-pressed', String(shown));
+        btn.title = shown ? 'Hide password' : 'Show password';
+    };
+    btn.addEventListener('click', () => {
+        const pos = input.selectionStart;
+        input.type = input.type === 'password' ? 'text' : 'password';
+        sync();
+        input.focus();
+        try { input.setSelectionRange(pos, pos); } catch (e) { /* not supported for this type */ }
+    });
+    // Never submit a password the browser could save as plain text: hide it again on submit.
+    input.form?.addEventListener('submit', () => { input.type = 'password'; });
+    sync();
+    wrap.appendChild(btn);
+});
