@@ -23,6 +23,7 @@ class ExamAccessCode extends Model
     public function enrollment() { return $this->belongsTo(Enrollment::class); }
     public function attempt() { return $this->belongsTo(QuizAttempt::class, 'quiz_attempt_id'); }
     public function creator() { return $this->belongsTo(User::class, 'created_by'); }
+    public function proctorRequest() { return $this->hasOne(ProctorRequest::class); }
 
     public static function generate(): string
     {

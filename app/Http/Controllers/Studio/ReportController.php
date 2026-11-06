@@ -47,7 +47,7 @@ class ReportController extends Controller
         $done = $enrollment->completions()->pluck('completed_at', 'lesson_id');
         $attempts = $enrollment->attempts()->whereNotNull('submitted_at')->with('quiz.lesson')->latest('submitted_at')->get();
         $codeQuizzes = ExamAccessController::codeQuizzes($course);
-        $codes = ExamAccessCode::where('enrollment_id', $enrollment->id)->with(['quiz.lesson', 'creator', 'attempt'])->latest('id')->get();
+        $codes = ExamAccessCode::where('enrollment_id', $enrollment->id)->with(['quiz.lesson', 'creator', 'attempt', 'proctorRequest'])->latest('id')->get();
         return view('studio.student', compact('course', 'enrollment', 'done', 'attempts', 'codeQuizzes', 'codes'));
     }
 

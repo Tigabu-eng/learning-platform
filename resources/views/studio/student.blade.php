@@ -39,6 +39,7 @@ The code works once. Please enter it on the student's screen at the start of the
                 @error('proctor_email')<p class="mt-1 text-sm text-brick">{{ $message }}</p>@enderror</div>
             <div class="md:col-span-2 lg:col-span-3"><label class="label" for="notes">Notes <span class="font-normal text-muted">(optional, staff only)</span></label>
                 <input id="notes" name="notes" maxlength="2000" class="input" value="{{ old('notes') }}" placeholder="e.g. Virtual proctor, Zoom session Tuesday 10am ET"></div>
+            <label class="flex items-center gap-2 text-sm md:col-span-2 lg:col-span-3"><input type="checkbox" name="email_proctor" value="1" class="check" @checked(old('email_proctor'))> Email the code and instructions to the proctor, and tell the student</label>
             <div class="flex items-end"><button class="btn-primary w-full">Generate code</button></div>
             @error('quiz_id')<p class="text-sm text-brick md:col-span-2">{{ $message }}</p>@enderror
         </form>
@@ -63,6 +64,9 @@ The code works once. Please enter it on the student's screen at the start of the
                                 @case('expired')<span class="badge bg-mist text-muted">Expired</span>@break
                                 @default<span class="badge-red">Cancelled</span>
                             @endswitch
+                            @if ($c->proctorRequest?->proctor_confirmed_at)
+                                <br>@if ($c->proctorRequest->proctor_flagged)<a href="{{ route('studio.proctoring', ['status' => 'approved']) }}#request-{{ $c->proctorRequest->id }}" class="badge-red mt-1">Proctor reported a problem</a>@else<span class="badge-green mt-1">Proctor confirmed</span>@endif
+                            @endif
                         </td>
                         <td class="whitespace-nowrap text-xs">{{ $c->created_at->format('M j, Y') }}@if ($c->creator)<br><span class="text-muted">by {{ $c->creator->name }}</span>@endif</td>
                         <td>@if ($status === 'active')<form method="POST" action="{{ route('studio.exam-codes.revoke', $c) }}" data-confirm="Cancel this code? The proctor won't be able to use it.">@csrf<button class="btn-danger btn-sm">Cancel</button></form>@endif</td>
