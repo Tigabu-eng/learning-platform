@@ -33,6 +33,8 @@
         <p class="text-sm text-muted">Give someone access without payment.</p>
         <div><label class="label" for="email">Email</label><input id="email" name="email" type="email" class="input" value="{{ old('email') }}" required></div>
         <div><label class="label" for="name">Name</label><input id="name" name="name" class="input" value="{{ old('name') }}"><p class="hint">Only needed if they don’t have an account yet.</p></div>
+        <label class="flex gap-3 text-sm"><input type="checkbox" name="notify" value="1" class="check mt-0.5" @checked(old('notify', true))>
+            <span>Email them that they’re enrolled<span class="block text-xs text-muted">New accounts get a link to choose their password.</span></span></label>
         <button class="btn-primary w-full">Enroll student</button>
     </form>
 </div>

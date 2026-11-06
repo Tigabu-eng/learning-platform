@@ -3,13 +3,16 @@
 namespace App\Http\Controllers\Studio;
 
 use App\Http\Controllers\Controller;
+use App\Mail\EnrolledByStaff;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\ExamAccessCode;
 use App\Models\QuizAttempt;
 use App\Models\User;
 use App\Services\Progress;
+use App\Support\SafeMail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Password;
 
 class ReportController extends Controller
 {
@@ -31,12 +34,21 @@ class ReportController extends Controller
         CourseController::authorizeCourse($request, $course);
         $data = $request->validate(['email' => 'required|email', 'name' => 'nullable|string|max:120']);
         $user = User::where('email', $data['email'])->first();
+        $isNew = false;
         if (! $user) {
             if (empty($data['name'])) return back()->withErrors(['email' => 'No account uses that email. Add their name to create one.'])->withInput();
             $user = User::create(['name' => $data['name'], 'email' => $data['email'], 'password' => str()->random(32), 'role' => 'student']);
+            $isNew = true;
         }
         $progress->enroll($user, $course);
-        return back()->with('status', $user->name.' is enrolled.');
+
+        if (! $request->boolean('notify')) return back()->with('status', $user->name.' is enrolled. No email was sent.');
+        // A new account gets a link to choose its password (it was created with a random one).
+        $link = $isNew
+            ? route('password.reset', ['token' => Password::broker('invites')->createToken($user), 'email' => $user->email, 'invite' => 1])
+            : null;
+        $sent = SafeMail::send($user->email, new EnrolledByStaff($user, $course, $link));
+        return back()->with('status', $user->name.' is enrolled. '.($sent ? 'We emailed them'.($isNew ? ' a link to choose a password.' : '.') : 'The email couldn’t be sent, so let them know yourself.'));
     }
 
     public function student(Request $request, Course $course, Enrollment $enrollment)

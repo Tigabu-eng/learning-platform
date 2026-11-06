@@ -5,7 +5,7 @@
     <p class="mt-2 text-muted">Log in to continue learning.</p>
     <form method="POST" action="{{ route('login') }}" class="panel mt-8 space-y-5 p-6">@csrf
         <div><label class="label" for="email">Email</label><input class="input" id="email" name="email" type="email" value="{{ old('email') }}" required autofocus autocomplete="email"></div>
-        <div><label class="label" for="password">Password</label><input class="input" id="password" name="password" type="password" required autocomplete="current-password"></div>
+        <div><div class="flex items-baseline justify-between gap-3"><label class="label" for="password">Password</label><a href="{{ route('password.request') }}" class="-my-2 py-2 text-sm font-semibold text-pine">Forgot password?</a></div><input class="input" id="password" name="password" type="password" required autocomplete="current-password"></div>
         <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="remember" class="check"> Keep me logged in</label>
         <button class="btn-primary w-full">Log in</button>
     </form>

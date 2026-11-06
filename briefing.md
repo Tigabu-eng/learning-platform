@@ -168,7 +168,7 @@ These are the goals that justify building our own platform. They are not all bui
 - ✅ Built-in test payment mode
 - 🔁 Stripe and Chapa integrations
 - ⬜ Stripe webhook with signature verification. The shared route `/webhooks/{gateway}` already exists and Chapa uses it; Stripe still needs event parsing (`checkout.session.completed`) and `Stripe-Signature` verification
-- ⬜ Refunds, invoices and receipts by email
+- ⬜ Refunds and invoices (receipts by email are done)
 - ⬜ Team or agency seats, subscriptions and memberships
 
 ### Progress and certificates
@@ -182,7 +182,8 @@ These are the goals that justify building our own platform. They are not all bui
 - ✅ Manual enrollment by instructors
 - 🔁 Manually enrolled new users can't sign in yet
 - ⬜ Password reset
-- ⬜ Email notifications: welcome, receipt, certificate issued, new drip lesson, reminders for inactive students
+- ✅ Emails: welcome on sign-up, payment receipt, "you're enrolled" from the Studio (new accounts get a 7-day set-password link), "Forgot password?" reset (60-minute link)
+- ⬜ Emails: certificate issued, new drip lesson, reminders for inactive students
 - ⬜ Student profile page listing everything they've earned
 - ⬜ Community or discussion area
 
@@ -199,7 +200,6 @@ These are the goals that justify building our own platform. They are not all bui
 | **Exam time limit** | `QuizEngine::submit()` accepts answers sent after `expires_at`. The browser auto-submits, but a student who blocks scripts could submit late. Reject or truncate submissions after the deadline plus a short grace period, and grade the last autosaved answers instead. |
 | **Stripe and Chapa** | Both are written to the providers' public APIs but have not been run against real accounts. Test end to end with sandbox keys: success, decline, cancel, and a student closing the tab before returning. Stripe confirms only when the student comes back to the return page, so a closed tab leaves the order pending until the Stripe webhook (section 5, Checkout and sales) is built. |
 | **Certificates after course changes** | If lessons are added after a certificate is issued, progress drops below 100% but the certificate stays. Decide the policy and make it consistent. Deleting lessons doesn't recalculate progress either. |
-| **Manual enrollment of new people** | Creating an account from the Students page sets a random password and sends nothing. Pair it with an invite email or password reset. |
 | **Video uploads** | The app allows 500 MB, but PHP's `upload_max_filesize` and `post_max_size` must allow it. Files are stored on the local disk with no transcoding; consider cloud storage or a video host. |
 | **Drip dates and time zones** | Release dates are calculated in the server's time zone. Confirm the time zone matches TARC's audience. |
 | **Shuffled answer order** | Shuffled choices rely on a seeded random order per attempt. Confirm the order is stable when reloading and identical between taking and reviewing. |
