@@ -82,10 +82,25 @@ class Progress
         $percent = $total ? (int) floor($done / $total * 100) : 0;
 
         $enrollment->progress_percent = $percent;
+        $justCompleted = false;
         if ($percent === 100 && ! $enrollment->completed_at) {
             $enrollment->completed_at = now();
+            $justCompleted = true;
         }
         $enrollment->save();
+
+        if ($justCompleted) {
+            $enrollment->loadMissing(['user', 'course']);
+            app(TpdWebhook::class)->send('course.completed', [
+                'enrollment_id' => $enrollment->id,
+                'course_slug' => $enrollment->course->slug,
+                'course_title' => $enrollment->course->title,
+                'user_email' => $enrollment->user->email,
+                'tpd_user_id' => $enrollment->user->tpd_user_id,
+                'progress_percent' => $enrollment->progress_percent,
+                'completed_at' => $enrollment->completed_at?->toIso8601String(),
+            ]);
+        }
 
         if ($percent === 100) $this->issueCertificate($enrollment);
     }
@@ -107,7 +122,7 @@ class Progress
         do { $code = strtoupper(Str::random(4).'-'.Str::random(4).'-'.Str::random(4)); }
         while (Certificate::where('code', $code)->exists());
 
-        return Certificate::create([
+        $certificate = Certificate::create([
             'enrollment_id' => $enrollment->id,
             'user_id' => $enrollment->user_id,
             'course_id' => $course->id,
@@ -115,5 +130,18 @@ class Progress
             'final_score' => $score,
             'issued_at' => now(),
         ]);
+
+        $enrollment->loadMissing('user');
+        app(TpdWebhook::class)->send('certificate.issued', [
+            'certificate_code' => $certificate->code,
+            'final_score' => $certificate->final_score,
+            'issued_at' => $certificate->issued_at?->toIso8601String(),
+            'course_slug' => $course->slug,
+            'course_title' => $course->title,
+            'user_email' => $enrollment->user->email,
+            'tpd_user_id' => $enrollment->user->tpd_user_id,
+        ]);
+
+        return $certificate;
     }
 }

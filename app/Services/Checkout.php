@@ -63,6 +63,20 @@ class Checkout
         if ($justPaid) {
             $order = $order->fresh(['user', 'course', 'coupon']);
             SafeMail::send($order->user->email, new OrderReceipt($order));
+            app(TpdWebhook::class)->send('order.paid', [
+                'order_id' => $order->id,
+                'reference' => $order->reference,
+                'gateway' => $order->gateway,
+                'amount' => (float) $order->amount,
+                'discount' => (float) $order->discount,
+                'total' => (float) $order->total,
+                'currency' => $order->currency,
+                'paid_at' => $order->paid_at?->toIso8601String(),
+                'course_slug' => $order->course->slug,
+                'course_title' => $order->course->title,
+                'user_email' => $order->user->email,
+                'tpd_user_id' => $order->user->tpd_user_id,
+            ]);
         }
     }
 }

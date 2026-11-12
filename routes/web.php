@@ -20,12 +20,16 @@ use App\Http\Controllers\Studio\QuestionController;
 use App\Http\Controllers\Studio\QuestionImportController;
 use App\Http\Controllers\Studio\ReportController;
 use App\Http\Controllers\Studio\StudioController;
+use App\Http\Controllers\TpdSsoController;
 use Illuminate\Support\Facades\Route;
 
 // Public
 Route::get('/', [CatalogController::class, 'index'])->name('home');
-Route::get('/courses/{course}', [CatalogController::class, 'show'])->name('courses.show');
+Route::get('/courses/{course}', [CatalogController::class, 'show'])->middleware('tpd.frame')->name('courses.show');
 Route::get('/verify', [CertificateController::class, 'verify'])->name('certificates.verify');
+
+// Signed Single Sign-On from Travel Partner Directory (WordPress)
+Route::get('/sso/login', [TpdSsoController::class, 'login'])->middleware(['tpd.frame', 'throttle:60,1'])->name('tpd.sso');
 
 // Proctor's private page (link from their email; no account)
 Route::middleware('throttle:30,1')->group(function () {
@@ -75,7 +79,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // Instructor studio
-Route::middleware(['auth', 'role:admin,instructor'])->prefix('studio')->name('studio.')->group(function () {
+Route::middleware(['auth', 'role:admin,instructor', 'tpd.frame'])->prefix('studio')->name('studio.')->group(function () {
     Route::get('/', [StudioController::class, 'dashboard'])->name('dashboard');
     Route::get('/sales', [StudioController::class, 'sales'])->name('sales');
 
@@ -123,7 +127,7 @@ Route::middleware(['auth', 'role:admin,instructor'])->prefix('studio')->name('st
 });
 
 // Admin
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'role:admin', 'tpd.frame'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/users', [AdminController::class, 'users'])->name('users');
     Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('users.update');
