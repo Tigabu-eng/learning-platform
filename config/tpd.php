@@ -22,7 +22,7 @@ return [
     | changes before launch.
     */
     'tpd_base_url' => rtrim((string) env('TPD_BASE_URL', 'https://tpd.tarctpc.com'), '/'),
-    'frame_ancestors' => trim((string) env('TPD_FRAME_ANCESTORS', "'self' https://tpd.tarctpc.com")),
+    'frame_ancestors' => trim((string) env('TPD_FRAME_ANCESTORS', env('TPD_ALLOWED_FRAME_ANCESTORS', "'self' https://tpd.tarctpc.com http://localhost:* http://127.0.0.1:*"))),
 
     /*
     |--------------------------------------------------------------------------
